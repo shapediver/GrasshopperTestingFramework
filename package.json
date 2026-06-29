@@ -1,0 +1,23 @@
+{
+  "name": "grasshopper-testing-framework",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "postinstall": "playwright install chromium",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:update-snapshots": "playwright test --update-snapshots",
+    "test:list": "playwright test --list",
+    "test:simple-screenshots": "playwright test --grep @simple-screenshots",
+    "test:interaction": "playwright test --grep @interaction",
+    "pick-coords": "tsx scripts/pick-coords.ts",
+    "typecheck": "tsc --noEmit -p tests/tsconfig.json"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.0",
+    "tsx": "^4.19.0",
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.3"
+  }
+}

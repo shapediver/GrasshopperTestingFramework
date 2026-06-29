@@ -1,0 +1,29 @@
+{
+  "defaults": {
+    "timeoutMs": 90000
+  },
+  "scenarios": [
+    {
+      "id": "barcelona",
+      "slug": "webinar-2410-a-barcelonaneighbourhood"
+    },
+    {
+      "id": "barcelona-modelStateId",
+      "slug": "webinar-2410-a-barcelonaneighbourhood",
+      "params": {
+        "modelStateId": "LnRErLoH8KYGUnjP"
+      }
+    },
+    {
+      "id": "barcelona-modelStateId-multiple",
+      "slug": "webinar-2410-a-barcelonaneighbourhood",
+      "params": {
+        "modelStateId": [
+          "f6AP8LgDRMbZHlob",
+          "hXGy28kV6Ds5O4LW",
+          "Dy9iwGmrieGTMLi0"
+        ]
+      }
+    }
+  ]
+}
