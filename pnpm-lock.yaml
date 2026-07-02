@@ -11,6 +11,9 @@ importers:
       '@playwright/test':
         specifier: ^1.61.0
         version: 1.61.1
+      '@shapediver/viewer':
+        specifier: '*'
+        version: 3.18.2
       '@types/node':
         specifier: ^24.0.0
         version: 24.13.2
@@ -22,6 +25,10 @@ importers:
         version: 5.9.3
 
 packages:
+
+  '@ctrl/tinycolor@4.2.0':
+    resolution: {integrity: sha512-kzyuwOAQnXJNLS9PSyrk0CWk35nWJW/zl/6KvnTBMFK65gm7U1/Z5BqjxeapjZCIhQcM/DsrEmcbRwDyXyXK4A==}
+    engines: {node: '>=14'}
 
   '@esbuild/aix-ppc64@0.28.1':
     resolution: {integrity: sha512-Svl7tq8k/08+p6CXPpRjQ1fKX+1odH/BQbb48fV6fj3CWHhsoIOoY87w1oHXm0qEpkIK3ZfVgp0hed3XBXzXMQ==}
@@ -184,13 +191,264 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
+  '@shapediver/sdk.geometry-api-sdk-v2@3.4.2':
+    resolution: {integrity: sha512-BPoehzHZC4TBV3wJ0Nqok6ZrntqUbKhRJP99GNL1uqMMCJ+j9otdt8u8LcV4MuQQ4t2cSXkqzKRmpistoNoQOw==}
+
+  '@shapediver/sdk.sdtf-core@1.7.3':
+    resolution: {integrity: sha512-DhMZVbLw8ZNV5SWKofgZEENxTLnOjrr2VWlAYrqFBlfzFbkGUu/UWMoCaxmwhp2RNBLHmGFGvFr4H0ZOxAkclg==}
+
+  '@shapediver/sdk.sdtf-geometry@1.7.3':
+    resolution: {integrity: sha512-1jRlBOC3MTyahtQOYRdzmxb3OchBdOS16DL3xCLdP65pGq3+psWLvtAziDpLv2rujOPVTax6utJnU15CQlbfCw==}
+
+  '@shapediver/sdk.sdtf-primitives@1.7.3':
+    resolution: {integrity: sha512-jLSHRlFkHuosJ080FrYiEnEOlSwcmJs7GwXWgDkXtj7CG2lCGvVlwQP2Zd3jxvfW3oh9Gfyb7xIWAE17L9N1uQ==}
+
+  '@shapediver/sdk.sdtf-v1@1.7.3':
+    resolution: {integrity: sha512-eaymGF67keXLlO/4uXXx9Zo5OWeyFMBcj5Tg/3CpOCWBLDvCf9Bkjn8uJNbA71qsWKpnDT86HjF6Zrjjzq0YLQ==}
+    hasBin: true
+
+  '@shapediver/viewer.api.general@3.18.2':
+    resolution: {integrity: sha512-OQN0QWR0cllV3le2zUIQd+K5oHhumtiCEj5HZ16zdWaxZW7vIDNWHmZl0ZKWBrsAiVWlVMoYpr5zpNwLU8aAug==}
+
+  '@shapediver/viewer.creation-control-center.session@3.18.2':
+    resolution: {integrity: sha512-GW2tKVpaADUUHNO4GQXgWNO4TOPNhF4A5RpE0sZpxuvwU5I53aFJpefpoS0eBTDV8bfQDwfIgBcTgHRfgED2jw==}
+
+  '@shapediver/viewer.creation-control-center.viewport@3.18.2':
+    resolution: {integrity: sha512-R5ycLKj+drqt7x85buOa30j0FxacjSMRNV2zZcKfGH/gb/2cSe1oGiUOLSOOg5QD7HdRqP4obVwNysWolI91eQ==}
+
+  '@shapediver/viewer.data-engine.data-engine@3.18.2':
+    resolution: {integrity: sha512-5wsFDjBa+ONyQ4QutpnNRIxbrHCZETJRfWtECNUY+mIDkI96U+bETUrAiu3W8u9RK4C53x5f2wqkY1lR20/EsA==}
+
+  '@shapediver/viewer.data-engine.geometry-engine@3.18.2':
+    resolution: {integrity: sha512-PxzoTi32OCM0pnY8/8yUl7Fg5tfVcvzlvTaiNjFGboD6BEFndmEikEl4+XPTVMXU5uyYggShQ3+R4g5cBekF6g==}
+
+  '@shapediver/viewer.data-engine.gltf-converter@3.18.2':
+    resolution: {integrity: sha512-MHNsQVS1UsVz+8evsMnBk9eNtFky5V9qT7ZS0oG/8OCN2doGv7t3qZCHcAFk2moQdWg5n4lYURKC9RHUvVyriQ==}
+
+  '@shapediver/viewer.data-engine.html-element-anchor-engine@3.18.2':
+    resolution: {integrity: sha512-6uep2PXchtKgKzHG+Y2m4hNfV5Jv6UD39MmFVO9pXeC8SG9UdywVd6qteDnQfAt0zu7SdNA5FEaosZXDsV45/g==}
+
+  '@shapediver/viewer.data-engine.material-database-engine@3.18.2':
+    resolution: {integrity: sha512-xSfzzZG/YnYEG3yG9+kZ+OPAPWnAIvJ35Zjo2/cz3eLx6s+KFqoFUV+Cgu3negMNpfStCOKa6BtZryRpfMWkVg==}
+
+  '@shapediver/viewer.data-engine.material-engine@3.18.2':
+    resolution: {integrity: sha512-kc8epbdfEsy6YEabopBSppT354HbEa+EA8KgcysE/z1V12V/3bwzPC3FhaQU32k+o5rQDVbGHZ6FNzreC+oDyg==}
+
+  '@shapediver/viewer.data-engine.sdtf-engine@3.18.2':
+    resolution: {integrity: sha512-qE+UHzxSjX8Ot3FFGBNxRi+DoUQvTmNNVy5/rh1T1No8X9CYptFaoyrved0AAGEXw9hTlxlWeio+xPyamZTZgQ==}
+
+  '@shapediver/viewer.data-engine.shared-types@3.18.2':
+    resolution: {integrity: sha512-A4Sb3P/s2TsBBuOjeeT6/IDpG3m1i6xkdrtAYsEn3eqRVk3+YQuXV0d2+yBaZmv9vJl6uiDLl5UvI89e5/SyvQ==}
+
+  '@shapediver/viewer.data-engine.tag3d-engine@3.18.2':
+    resolution: {integrity: sha512-aNzhhrTl+cVUgSvSG5LDqlCGqYISIzURsfqfMMXYf4oIMlEFoePozby6ZrIigUKGjmgQgLLkZ65gi06GVIZyOw==}
+
+  '@shapediver/viewer.rendering-engine.animation-engine@3.18.2':
+    resolution: {integrity: sha512-S+mvVCkUyB+pAQ1Qqb4Av+a67o+8LxS3JjtZ9RwcLiiG4ZGYOV14blaNp1jR9UVfenooxWNr/o+Pybz1YP/4vw==}
+
+  '@shapediver/viewer.rendering-engine.animation-frame-engine@3.18.2':
+    resolution: {integrity: sha512-A8m1svf6Kf2vtBR8PkS1lirLv4r29sh4E1DxNA3WGaoSW/8XVXkjPjuVECaqtAy2ZENpzidShaXDUX2yf39okA==}
+
+  '@shapediver/viewer.rendering-engine.camera-engine@3.18.2':
+    resolution: {integrity: sha512-3z5gaqLHnD1VUrUG9sOk+WmrI5HSYsQe0wAeZ1b1gfl6x9opbTHRXc7vx4Ei5n1EzWRAFeWZNhWf01mxKHX9aQ==}
+
+  '@shapediver/viewer.rendering-engine.canvas-engine@3.18.2':
+    resolution: {integrity: sha512-STWZKPg0rW1YSWxl1Ftc+kn5hk54ix33mNEB2w1Eyt/CcGCr/OeBVu4Wnl0dAN3feYKmJS38EjWO7aCZ3Ncwpg==}
+
+  '@shapediver/viewer.rendering-engine.intersection-engine@3.18.2':
+    resolution: {integrity: sha512-G2485m7yxn/OmtrqSn347VIEgqhZo3xi+FXUfJSTTfkgwpBOL6fMLlDg96eumOVW1aoz+Ga5zUGQi160ob0xeQ==}
+
+  '@shapediver/viewer.rendering-engine.light-engine@3.18.2':
+    resolution: {integrity: sha512-RF4qVQ1BL17vQEtz/pE6ryWfpfP0Jlz+iMdFaVRGoarxTqHs3Y1bnzQ3/fm6pTdo8qGzNnHBEXAmKbNk5mseZw==}
+
+  '@shapediver/viewer.rendering-engine.rendering-engine-threejs@3.18.2':
+    resolution: {integrity: sha512-mICMuB+nksFIxYwgBoAlyUn/1fXubL7t+BKUgj4gccviKJ+/O7WPxZVHVd1oIL8ZXQEtMzRw7IuelhPxnT34Ug==}
+
+  '@shapediver/viewer.rendering-engine.rendering-engine@3.18.2':
+    resolution: {integrity: sha512-Bs/ziMzl//cAQhMCxKNUcfFEOOisUib10QwjRNEMMdWiPVpPEGVOpiDH1G+CA0+9SNvFw0u4W4YwTsXJJxK+0g==}
+
+  '@shapediver/viewer.session-engine.session-engine@3.18.2':
+    resolution: {integrity: sha512-Qj+4NO5Y68PD4v7qQkOZTQoEAInfukVEQbAoht+/WC7IKS4v+sonRsg6wxUk5vbRFQqH6zUuybx4fEb0bYwrXA==}
+
+  '@shapediver/viewer.session@3.18.2':
+    resolution: {integrity: sha512-B4HSpkbr4+RtQ8Oxjo8yqES/vQp/SiAFHL+9UkPNghW0xcF/Mo4QySnTqr1iaXor/yxX/z1Cszhi19+QQSNfrA==}
+
+  '@shapediver/viewer.settings@1.3.0':
+    resolution: {integrity: sha512-h5CtGDz94A97uEn2efE8U0lJ3Ah1sm4/RWEs/Yr6q3ShpljUKrbN4vQN9/qNNpj+OmnmifI5HLsy4+T8u+B1sg==}
+
+  '@shapediver/viewer.shared.build-data@3.18.2':
+    resolution: {integrity: sha512-Dd16JG/B2MJJIfMYspRWj4QYQR1MN1seqt+HDGsEvlP0rRUGGW/FriVBZz3n+KDcgxxLekJXLSjnQ3QYJVhBdQ==}
+
+  '@shapediver/viewer.shared.global-access-objects@3.18.2':
+    resolution: {integrity: sha512-idAudoB0IFkpX7htIMM4t5EaQarBP98bzFdZRFfCmuZm98KR1Ke3DSVuy9pa49XufoD1aXFhmr1BHQX0UnBv8w==}
+
+  '@shapediver/viewer.shared.math@3.18.2':
+    resolution: {integrity: sha512-oUOgMIfHIrWuVcGFAan3Pvew/o+UE95QDJCv1SfVW51Umgux8KzKqw5b/aGahYyaW9rW7hm5qbNuiWM5OgTFFQ==}
+
+  '@shapediver/viewer.shared.node-tree@3.18.2':
+    resolution: {integrity: sha512-QjOCMGsPvW6bse0OetJqmNFvjjg6UwxhYbl57odHNexMfLRtha0cBsNadd7NQf1HwCNW+IwY2mznptU/2WufXw==}
+
+  '@shapediver/viewer.shared.services@3.18.2':
+    resolution: {integrity: sha512-Y6a7ZdlomKdSz9LAac4ZuiHQTEVtGJMsAWiX19Pw7E8TxfaTy1mImdq7+Roc+/pY1mblMIQJeptXRzKd6zKNBA==}
+
+  '@shapediver/viewer.shared.types@3.18.2':
+    resolution: {integrity: sha512-e/1+Cr9/EnQNpKLgTMwXLwiKR5qBv4H+6z6lxZIYfybTFiDBU9SGkR7194RliwCcU+Vp+xq6cngq51UPD57fcw==}
+
+  '@shapediver/viewer.utils.mime-type@1.1.0':
+    resolution: {integrity: sha512-KssQEsaUYiLkMCtbW/vd0CxjmP/8REAUejKL+fvjOrp1Z98MED31wYPeVbOXstFOtrCOdhMGM6mFIN2I4DMzfw==}
+
+  '@shapediver/viewer.viewport@3.18.2':
+    resolution: {integrity: sha512-PyuJ8i7b2q+VfdYlwZ8DBkQq5I7viyfON2jWELVMIbSkeqs7cyq/sR5+qPIEo5J4/Z3eN5i6baT/27Hu8L7/YA==}
+
+  '@shapediver/viewer@3.18.2':
+    resolution: {integrity: sha512-coT3PT+GTufoCURevmcgk+K/7Vkxj9YJVguXmipIgWVOgGqOekB4xGxa3Fw2CARvkxzpIAKJvfz6pehiRW10SQ==}
+
+  '@tweenjs/tween.js@23.1.3':
+    resolution: {integrity: sha512-vJmvvwFxYuGnF2axRtPYocag6Clbb5YS7kLL+SO/TeVFzHqDIWrNKYtcsPMibjDx9O+bu+psAy9NKfWklassUA==}
+
+  '@tweenjs/tween.js@25.0.0':
+    resolution: {integrity: sha512-XKLA6syeBUaPzx4j3qwMqzzq+V4uo72BnlbOjmuljLrRqdsd3qnzvZZoxvMHZ23ndsRS4aufU6JOZYpCbU6T1A==}
+
   '@types/node@24.13.2':
     resolution: {integrity: sha512-fRa09kZTgu8o71KFcDjUFuc7F+dEbZYZmkI0mg5YBTRs0yMKjYHsq/c0urDKeDb+D5qVgXOdFcuu+DZPKOITwA==}
+
+  '@types/qrcode@1.5.6':
+    resolution: {integrity: sha512-te7NQcV2BOvdj2b1hCAHzAoMNuj65kNBMz0KBaxM6c3VGBOhU0dURQKOtH8CFNI/dsKkwlv32p26qYQTWoB5bw==}
+
+  '@types/stats.js@0.17.4':
+    resolution: {integrity: sha512-jIBvWWShCvlBqBNIZt0KAshWpvSjhkwkEu4ZUcASoAvhmrgAUI2t1dXrjSL4xXVLB4FznPrIsX3nKXFl/Dt4vA==}
+
+  '@types/three@0.162.0':
+    resolution: {integrity: sha512-0j5yZcVukVIhrhSIC7+LmBPkkMoMuEJ1AfYBZfgNytdYqYREMuiyXWhYOMeZLBElTEAlJIZn7r2W3vqTIgjWlg==}
+
+  '@types/trusted-types@2.0.7':
+    resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
+
+  '@types/ua-parser-js@0.7.39':
+    resolution: {integrity: sha512-P/oDfpofrdtF5xw433SPALpdSchtJmY7nsJItf8h3KXqOslkbySh8zq4dSWXH2oTjRvJ5PczVEoCZPow6GicLg==}
+
+  '@types/webxr@0.5.24':
+    resolution: {integrity: sha512-h8fgEd/DpoS9CBrjEQXR+dIDraopAEfu4wYVNY2tEPwk60stPWhvZMf4Foo5FakuQ7HFZoa8WceaWFervK2Ovg==}
+
+  agent-base@6.0.2:
+    resolution: {integrity: sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==}
+    engines: {node: '>= 6.0.0'}
+
+  ansi-regex@5.0.1:
+    resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
+    engines: {node: '>=8'}
+
+  ansi-styles@4.3.0:
+    resolution: {integrity: sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg==}
+    engines: {node: '>=8'}
+
+  asynckit@0.4.0:
+    resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
+
+  axios@1.16.1:
+    resolution: {integrity: sha512-caYkukvroVPO8KrzuJEb50Hm07KwfBZPEC3VeFHTsqWHvKTsy54hjJz9BS/cdaypROE2rH6xvm9mHX4fgWkr3A==}
+
+  browser-or-node@3.0.0:
+    resolution: {integrity: sha512-iczIdVJzGEYhP5DqQxYM9Hh7Ztpqqi+CXZpSmX8ALFs9ecXkQIeqRyM6TfxEfMVpwhl3dSuDvxdzzo9sUOIVBQ==}
+
+  call-bind-apply-helpers@1.0.2:
+    resolution: {integrity: sha512-Sp1ablJ0ivDkSzjcaJdxEunN5/XvksFJ2sMBFfq6x0ryhQV/2b/KwFe21cMpmHtPOSij8K99/wSfoEuTObmuMQ==}
+    engines: {node: '>= 0.4'}
+
+  camelcase@5.3.1:
+    resolution: {integrity: sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==}
+    engines: {node: '>=6'}
+
+  cliui@6.0.0:
+    resolution: {integrity: sha512-t6wbgtoCXvAzst7QgXxJYqPt0usEfbgQdftEPbLL/cvv6HPE5VgvqCuAIDR0NgU52ds6rFwqrgakNLrHEjCbrQ==}
+
+  color-convert@2.0.1:
+    resolution: {integrity: sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==}
+    engines: {node: '>=7.0.0'}
+
+  color-name@1.1.4:
+    resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
+
+  combined-stream@1.0.8:
+    resolution: {integrity: sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==}
+    engines: {node: '>= 0.8'}
+
+  debug@4.4.3:
+    resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
+    engines: {node: '>=6.0'}
+    peerDependencies:
+      supports-color: '*'
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
+
+  decamelize@1.2.0:
+    resolution: {integrity: sha512-z2S+W9X73hAUUki+N+9Za2lBlun89zigOyGrsax+KUQ6wKW4ZoWpEYBkGhQjwAjjDCkWxhY0VKEhk8wzY7F5cA==}
+    engines: {node: '>=0.10.0'}
+
+  decimal.js@10.6.0:
+    resolution: {integrity: sha512-YpgQiITW3JXGntzdUmyUR1V812Hn8T1YVXhCu+wO3OpS4eU9l4YdD3qjyiKdV6mvV29zapkMeD390UVEf2lkUg==}
+
+  delayed-stream@1.0.0:
+    resolution: {integrity: sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==}
+    engines: {node: '>=0.4.0'}
+
+  detect-it@4.0.1:
+    resolution: {integrity: sha512-dg5YBTJYvogK1+dA2mBUDKzOWfYZtHVba89SyZUhc4+e3i2tzgjANFg5lDRCd3UOtRcw00vUTMK8LELcMdicug==}
+
+  dijkstrajs@1.0.3:
+    resolution: {integrity: sha512-qiSlmBq9+BCdCA/L46dw8Uy93mloxsPSbwnm5yrKn2vMPiy8KyAskTF6zuV/j5BMsmOGZDPs7KjU+mjb670kfA==}
+
+  dompurify@3.4.6:
+    resolution: {integrity: sha512-+7gzEI8trIIQkVCvQ3ucGtNfH3nOmDgVTzc62rAAOlMxLth78pwpPoZCPc7CyRzAQF89MqcfPdEWkDwnjgqktg==}
+
+  dunder-proto@1.0.1:
+    resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
+    engines: {node: '>= 0.4'}
+
+  emoji-regex@8.0.0:
+    resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
+
+  es-define-property@1.0.1:
+    resolution: {integrity: sha512-e3nRfgfUZ4rNGL232gUgX06QNyyez04KdjFrF+LTRoOXmrOgFKDg4BCdsjW8EnT69eqdYGmRpJwiPVYNrCaW3g==}
+    engines: {node: '>= 0.4'}
+
+  es-errors@1.3.0:
+    resolution: {integrity: sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw==}
+    engines: {node: '>= 0.4'}
+
+  es-object-atoms@1.1.2:
+    resolution: {integrity: sha512-HWcBoN6NileqtSydK2FqHbS/LoDd2pqrnQHLyJzBj4kOp/ky2MWMN694xOfkK8/SnUsW2DH7EfyVlydKCsm1Zw==}
+    engines: {node: '>= 0.4'}
+
+  es-set-tostringtag@2.1.0:
+    resolution: {integrity: sha512-j6vWzfrGVfyXxge+O0x5sh6cvxAog0a/4Rdd2K36zCMV5eJ+/+tOAngRO8cODMNWbVRdVlmGZQL2YS3yR8bIUA==}
+    engines: {node: '>= 0.4'}
 
   esbuild@0.28.1:
     resolution: {integrity: sha512-HrJrvZv5ayxBzPfwphOoNzkzOIIlifzk0KJrGK2c8R4+LKpMtpYLQeUdjnwjWv/LZlkH2laZk+4w78pi99D4Vw==}
     engines: {node: '>=18'}
     hasBin: true
+
+  fflate@0.6.10:
+    resolution: {integrity: sha512-IQrh3lEPM93wVCEczc9SaAOvkmcoQn/G8Bo1e8ZPlY3X3bnAxWaBdvTdvM1hP62iZp0BXWDy4vTAy4fF0+Dlpg==}
+
+  find-up@4.1.0:
+    resolution: {integrity: sha512-PpOwAdQ/YlXQ2vj8a3h8IipDuYRi3wceVQQGYWxNINccq40Anw7BlsEXCMbt1Zt+OLA6Fq9suIpIWD0OsnISlw==}
+    engines: {node: '>=8'}
+
+  follow-redirects@1.16.0:
+    resolution: {integrity: sha512-y5rN/uOsadFT/JfYwhxRS5R7Qce+g3zG97+JrtFZlC9klX/W5hD7iiLzScI4nZqUS7DNUdhPgw4xI8W2LuXlUw==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+
+  form-data@4.0.6:
+    resolution: {integrity: sha512-vKatAh4SlVfgbv+YtmhiRjhEMJsYpsG1Y2rMQtR+SVSbytsSD1YGzDIcrAJmdFec88u/+VoGmxnl+80gL1tRCQ==}
+    engines: {node: '>= 6'}
 
   fsevents@2.3.2:
     resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
@@ -202,6 +460,86 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
 
+  function-bind@1.1.2:
+    resolution: {integrity: sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==}
+
+  get-caller-file@2.0.5:
+    resolution: {integrity: sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==}
+    engines: {node: 6.* || 8.* || >= 10.*}
+
+  get-intrinsic@1.3.0:
+    resolution: {integrity: sha512-9fSjSaos/fRIVIp+xSJlE6lfwhES7LNtKaCBIamHsjr2na1BiABJPo0mOjjz8GJDURarmCPGqaiVg5mfjb98CQ==}
+    engines: {node: '>= 0.4'}
+
+  get-proto@1.0.1:
+    resolution: {integrity: sha512-sTSfBjoXBp89JvIKIefqw7U2CCebsc74kiY6awiGogKtoSGbgjYE/G/+l9sF3MWFPNc9IcoOC4ODfKHfxFmp0g==}
+    engines: {node: '>= 0.4'}
+
+  gl-matrix@3.4.4:
+    resolution: {integrity: sha512-latSnyDNt/8zYUB6VIJ6PCh2jBjJX6gnDsoCZ7LyW7GkqrD51EWwa9qCoGixj8YqBtETQK/xY7OmpTF8xz1DdQ==}
+
+  gopd@1.2.0:
+    resolution: {integrity: sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==}
+    engines: {node: '>= 0.4'}
+
+  has-symbols@1.1.0:
+    resolution: {integrity: sha512-1cDNdwJ2Jaohmb3sg4OmKaMBwuC48sYni5HUw2DvsC8LjGTLK9h+eb1X6RyuOHe4hT0ULCW68iomhjUoKUqlPQ==}
+    engines: {node: '>= 0.4'}
+
+  has-tostringtag@1.0.2:
+    resolution: {integrity: sha512-NqADB8VjPFLM2V0VvHUewwwsw0ZWBaIdgo+ieHtK3hasLz4qeCRjYcqfB6AQrBggRKppKF8L52/VqdVsO47Dlw==}
+    engines: {node: '>= 0.4'}
+
+  hasown@2.0.4:
+    resolution: {integrity: sha512-T2UbfbBEF32wiepXIsMlTW9+dDYC6wMh/t/vYA4tuOMKqWz/n3vr1NFSxQiyP+zk2mXsoMA/i/7qV6LKut1t1A==}
+    engines: {node: '>= 0.4'}
+
+  https-proxy-agent@5.0.1:
+    resolution: {integrity: sha512-dFcAjpTQFgoLMzC2VwU+C/CbS7uRL0lWmxDITmqm7C+7F0Odmj6s9l6alZc6AELXhrnggM2CeWSXHGOdX2YtwA==}
+    engines: {node: '>= 6'}
+
+  is-fullwidth-code-point@3.0.0:
+    resolution: {integrity: sha512-zymm5+u+sCsSWyD9qNaejV3DFvhCKclKdizYaJUuHA83RLjb7nSuGnddCHGv0hk+KY7BMAlsWeK4Ueg6EV6XQg==}
+    engines: {node: '>=8'}
+
+  locate-path@5.0.0:
+    resolution: {integrity: sha512-t7hw9pI+WvuwNJXwk5zVHpyhIqzg2qTlklJOf0mVxGSbe3Fp2VieZcduNYjaLDoy6p9uGpQEGWG87WpMKlNq8g==}
+    engines: {node: '>=8'}
+
+  math-intrinsics@1.1.0:
+    resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
+    engines: {node: '>= 0.4'}
+
+  meshoptimizer@0.18.1:
+    resolution: {integrity: sha512-ZhoIoL7TNV4s5B6+rx5mC//fw8/POGyNxS/DZyCJeiZ12ScLfVwRE/GfsxwiTkMYYD5DmK2/JXnEVXqL4rF+Sw==}
+
+  mime-db@1.52.0:
+    resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
+    engines: {node: '>= 0.6'}
+
+  mime-types@2.1.35:
+    resolution: {integrity: sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==}
+    engines: {node: '>= 0.6'}
+
+  ms@2.1.3:
+    resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
+
+  p-limit@2.3.0:
+    resolution: {integrity: sha512-//88mFWSJx8lxCzwdAABTJL2MyWB12+eIY7MDL2SqLmAkeKU9qxRvWuSyTjm3FUmpBEMuFfckAIqEaVGUDxb6w==}
+    engines: {node: '>=6'}
+
+  p-locate@4.1.0:
+    resolution: {integrity: sha512-R79ZZ/0wAxKGu3oYMlz8jy/kbhsNrS7SKZ7PxEHBgJ5+F2mtFW2fK2cOtBh1cHYkQsbzFV7I+EoRKe6Yt0oK7A==}
+    engines: {node: '>=8'}
+
+  p-try@2.2.0:
+    resolution: {integrity: sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==}
+    engines: {node: '>=6'}
+
+  path-exists@4.0.0:
+    resolution: {integrity: sha512-ak9Qy5Q7jYb2Wwcey5Fpvg2KoAc/ZIhLSLOSBmRmygPsGwkVVt0fZa0qrtMz+m6tJTAHfZQ8FnmB4MG4LWy7/w==}
+    engines: {node: '>=8'}
+
   playwright-core@1.61.1:
     resolution: {integrity: sha512-h7Qlt6m4REp25qvIdvbDtVmD4LqVXfpRxhORv9L0jzETM05p4fuPJ3dKyuSXQxDSbXnmS79HAgi9589lGSpLkg==}
     engines: {node: '>=18'}
@@ -211,6 +549,49 @@ packages:
     resolution: {integrity: sha512-DWnY5o3YbLWK4GovuAVwpqL+1VwGNdUGrRr++8j8PtQQzvAVZUIMjKQ90fY689sEJZJBbZVw1rXaOKSTitkzPQ==}
     engines: {node: '>=18'}
     hasBin: true
+
+  pngjs@5.0.0:
+    resolution: {integrity: sha512-40QW5YalBNfQo5yRYmiw7Yz6TKKVr3h6970B2YE+3fQpsWcrbj1PzJgxeJ19DRQjhMbKPIuMY8rFaXc8moolVw==}
+    engines: {node: '>=10.13.0'}
+
+  postprocessing@6.35.3:
+    resolution: {integrity: sha512-PH0/gqVYpp+vZjmSAohG/xH0u9FpbjfCGsFMsmsZVd8XXSmqJUR7b5C9ZFE/iMrWhe+tiTOFN9WvcEdjLI8LYQ==}
+    engines: {node: '>= 0.13.2'}
+    peerDependencies:
+      three: '>= 0.152.0 < 0.164.0'
+
+  proxy-from-env@2.1.0:
+    resolution: {integrity: sha512-cJ+oHTW1VAEa8cJslgmUZrc+sjRKgAKl3Zyse6+PV38hZe/V6Z14TbCuXcan9F9ghlz4QrFr2c92TNF82UkYHA==}
+    engines: {node: '>=10'}
+
+  qrcode@1.5.4:
+    resolution: {integrity: sha512-1ca71Zgiu6ORjHqFBDpnSMTR2ReToX4l1Au1VFLyVeBTFavzQnv5JxMFr3ukHVKpSrSA2MCk0lNJSykjUfz7Zg==}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
+
+  require-directory@2.1.1:
+    resolution: {integrity: sha512-fGxEI7+wsG9xrvdjsrlmL22OMTTiHRwAMroiEeMgq8gzoLC/PQr7RsRDSTLUg/bZAZtF+TVIkHc6/4RIKrui+Q==}
+    engines: {node: '>=0.10.0'}
+
+  require-main-filename@2.0.0:
+    resolution: {integrity: sha512-NKN5kMDylKuldxYLSUfrbo5Tuzh4hd+2E8NPPX02mZtn1VuREQToYe/ZdlJy+J3uCpfaiGF05e7B8W0iXbQHmg==}
+
+  set-blocking@2.0.0:
+    resolution: {integrity: sha512-KiKBS8AnWGEyLzofFfmvKwpdPzqiy16LvQfK3yv/fVH7Bj13/wl3JSR1J+rfgRE9q7xUJK4qvgS8raSOeLUehw==}
+
+  stats.js@0.17.0:
+    resolution: {integrity: sha512-hNKz8phvYLPEcRkeG1rsGmV5ChMjKDAWU7/OJJdDErPBNChQXxCo3WZurGpnWc6gZhAzEPFad1aVgyOANH1sMw==}
+
+  string-width@4.2.3:
+    resolution: {integrity: sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==}
+    engines: {node: '>=8'}
+
+  strip-ansi@6.0.1:
+    resolution: {integrity: sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==}
+    engines: {node: '>=8'}
+
+  three@0.162.0:
+    resolution: {integrity: sha512-xfCYj4RnlozReCmUd+XQzj6/5OjDNHBy5nT6rVwrOKGENAvpXe2z1jL+DZYaMu4/9pNsjH/4Os/VvS9IrH7IOQ==}
 
   tsx@4.22.4:
     resolution: {integrity: sha512-X8EX+XV4QR5xCsrgxaED954zTDfY8KqlDtskKEL0cHhyS/P8b4IFOvGDQpsC9Q1XnLq915wEfwwY/zzskCtmhg==}
@@ -222,10 +603,41 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  ua-parser-js@1.0.39:
+    resolution: {integrity: sha512-k24RCVWlEcjkdOxYmVJgeD/0a1TiSpqLg+ZalVGV9lsnr4yqu0w7tX/x2xX6G4zpkgQnRf89lxuZ1wsbjXM8lw==}
+    hasBin: true
+
   undici-types@7.18.2:
     resolution: {integrity: sha512-AsuCzffGHJybSaRrmr5eHr81mwJU3kjw6M+uprWvCXiNeN9SOGwQ3Jn8jb8m3Z6izVgknn1R0FTCEAP2QrLY/w==}
 
+  uuid@14.0.0:
+    resolution: {integrity: sha512-Qo+uWgilfSmAhXCMav1uYFynlQO7fMFiMVZsQqZRMIXp0O7rR7qjkj+cPvBHLgBqi960QCoo/PH2/6ZtVqKvrg==}
+    hasBin: true
+
+  which-module@2.0.1:
+    resolution: {integrity: sha512-iBdZ57RDvnOR9AGBhML2vFZf7h8vmBjhoaZqODJBFWHVtKkDmKuHai3cx5PgVMrX5YDNp27AofYbAwctSS+vhQ==}
+
+  wrap-ansi@6.2.0:
+    resolution: {integrity: sha512-r6lPcBGxZXlIcymEu7InxDMhdW0KDxpLgoFLcguasxCaJ/SOIZwINatK9KY/tf+ZrlywOKU0UDj3ATXUBfxJXA==}
+    engines: {node: '>=8'}
+
+  y18n@4.0.3:
+    resolution: {integrity: sha512-JKhqTOwSrqNA1NY5lSztJ1GrBiUodLMmIZuLiDaMRJ+itFd+ABVE8XBjOvIWL+rSqNDC74LCSFmlb/U4UZ4hJQ==}
+
+  yargs-parser@18.1.3:
+    resolution: {integrity: sha512-o50j0JeToy/4K6OZcaQmW6lyXXKhq7csREXcDwk2omFPJEwUNOVtJKvmDr9EI1fAJZUyZcRF7kxGBWmRXudrCQ==}
+    engines: {node: '>=6'}
+
+  yargs@15.4.1:
+    resolution: {integrity: sha512-aePbxDmcYW++PaqBsJ+HYUFwCdv4LVvdnhBy78E57PIor8/OVvhMrADFFEDh8DHDFRv/O9i3lPhsENjO7QX0+A==}
+    engines: {node: '>=8'}
+
+  zod@4.4.3:
+    resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
+
 snapshots:
+
+  '@ctrl/tinycolor@4.2.0': {}
 
   '@esbuild/aix-ppc64@0.28.1':
     optional: true
@@ -309,9 +721,580 @@ snapshots:
     dependencies:
       playwright: 1.61.1
 
+  '@shapediver/sdk.geometry-api-sdk-v2@3.4.2':
+    dependencies:
+      axios: 1.16.1
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/sdk.sdtf-core@1.7.3': {}
+
+  '@shapediver/sdk.sdtf-geometry@1.7.3':
+    dependencies:
+      '@shapediver/sdk.sdtf-core': 1.7.3
+
+  '@shapediver/sdk.sdtf-primitives@1.7.3':
+    dependencies:
+      '@shapediver/sdk.sdtf-core': 1.7.3
+      decimal.js: 10.6.0
+
+  '@shapediver/sdk.sdtf-v1@1.7.3':
+    dependencies:
+      '@shapediver/sdk.sdtf-core': 1.7.3
+      '@shapediver/sdk.sdtf-geometry': 1.7.3
+      '@shapediver/sdk.sdtf-primitives': 1.7.3
+      axios: 1.16.1
+      browser-or-node: 3.0.0
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.api.general@3.18.2':
+    dependencies:
+      '@shapediver/viewer.data-engine.geometry-engine': 3.18.2
+      '@shapediver/viewer.shared.build-data': 3.18.2
+      '@shapediver/viewer.shared.node-tree': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      gl-matrix: 3.4.4
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.creation-control-center.session@3.18.2':
+    dependencies:
+      '@shapediver/sdk.geometry-api-sdk-v2': 3.4.2
+      '@shapediver/viewer.session-engine.session-engine': 3.18.2
+      '@shapediver/viewer.settings': 1.3.0
+      '@shapediver/viewer.shared.build-data': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.creation-control-center.viewport@3.18.2':
+    dependencies:
+      '@shapediver/viewer.rendering-engine.rendering-engine': 3.18.2
+      '@shapediver/viewer.rendering-engine.rendering-engine-threejs': 3.18.2
+      '@shapediver/viewer.settings': 1.3.0
+      '@shapediver/viewer.shared.math': 3.18.2
+      '@shapediver/viewer.shared.node-tree': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.data-engine.data-engine@3.18.2':
+    dependencies:
+      '@shapediver/sdk.geometry-api-sdk-v2': 3.4.2
+      '@shapediver/viewer.data-engine.geometry-engine': 3.18.2
+      '@shapediver/viewer.data-engine.html-element-anchor-engine': 3.18.2
+      '@shapediver/viewer.data-engine.material-database-engine': 3.18.2
+      '@shapediver/viewer.data-engine.material-engine': 3.18.2
+      '@shapediver/viewer.data-engine.sdtf-engine': 3.18.2
+      '@shapediver/viewer.data-engine.tag3d-engine': 3.18.2
+      '@shapediver/viewer.shared.global-access-objects': 3.18.2
+      '@shapediver/viewer.shared.node-tree': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+      gl-matrix: 3.4.4
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.data-engine.geometry-engine@3.18.2':
+    dependencies:
+      '@shapediver/sdk.geometry-api-sdk-v2': 3.4.2
+      '@shapediver/viewer.data-engine.material-engine': 3.18.2
+      '@shapediver/viewer.data-engine.shared-types': 3.18.2
+      '@shapediver/viewer.rendering-engine.camera-engine': 3.18.2
+      '@shapediver/viewer.rendering-engine.light-engine': 3.18.2
+      '@shapediver/viewer.shared.build-data': 3.18.2
+      '@shapediver/viewer.shared.node-tree': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+      gl-matrix: 3.4.4
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.data-engine.gltf-converter@3.18.2':
+    dependencies:
+      '@shapediver/viewer.data-engine.shared-types': 3.18.2
+      '@shapediver/viewer.shared.build-data': 3.18.2
+      '@shapediver/viewer.shared.global-access-objects': 3.18.2
+      '@shapediver/viewer.shared.node-tree': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+      gl-matrix: 3.4.4
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.data-engine.html-element-anchor-engine@3.18.2':
+    dependencies:
+      '@shapediver/sdk.geometry-api-sdk-v2': 3.4.2
+      '@shapediver/viewer.data-engine.shared-types': 3.18.2
+      '@shapediver/viewer.shared.math': 3.18.2
+      '@shapediver/viewer.shared.node-tree': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+      gl-matrix: 3.4.4
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.data-engine.material-database-engine@3.18.2':
+    dependencies:
+      '@shapediver/sdk.geometry-api-sdk-v2': 3.4.2
+      '@shapediver/viewer.data-engine.material-engine': 3.18.2
+      '@shapediver/viewer.data-engine.shared-types': 3.18.2
+      '@shapediver/viewer.shared.global-access-objects': 3.18.2
+      '@shapediver/viewer.shared.node-tree': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+      gl-matrix: 3.4.4
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.data-engine.material-engine@3.18.2':
+    dependencies:
+      '@shapediver/sdk.geometry-api-sdk-v2': 3.4.2
+      '@shapediver/viewer.data-engine.shared-types': 3.18.2
+      '@shapediver/viewer.shared.node-tree': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+      gl-matrix: 3.4.4
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.data-engine.sdtf-engine@3.18.2':
+    dependencies:
+      '@shapediver/sdk.geometry-api-sdk-v2': 3.4.2
+      '@shapediver/sdk.sdtf-primitives': 1.7.3
+      '@shapediver/sdk.sdtf-v1': 1.7.3
+      '@shapediver/viewer.data-engine.shared-types': 3.18.2
+      '@shapediver/viewer.shared.build-data': 3.18.2
+      '@shapediver/viewer.shared.node-tree': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+      gl-matrix: 3.4.4
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.data-engine.shared-types@3.18.2':
+    dependencies:
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+      gl-matrix: 3.4.4
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.data-engine.tag3d-engine@3.18.2':
+    dependencies:
+      '@shapediver/sdk.geometry-api-sdk-v2': 3.4.2
+      '@shapediver/viewer.data-engine.geometry-engine': 3.18.2
+      '@shapediver/viewer.data-engine.shared-types': 3.18.2
+      '@shapediver/viewer.shared.global-access-objects': 3.18.2
+      '@shapediver/viewer.shared.node-tree': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+      gl-matrix: 3.4.4
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.rendering-engine.animation-engine@3.18.2':
+    dependencies:
+      '@shapediver/viewer.rendering-engine.rendering-engine': 3.18.2
+      '@shapediver/viewer.shared.node-tree': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+      '@tweenjs/tween.js': 25.0.0
+      gl-matrix: 3.4.4
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.rendering-engine.animation-frame-engine@3.18.2':
+    dependencies:
+      '@shapediver/viewer.rendering-engine.animation-engine': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@tweenjs/tween.js': 25.0.0
+      gl-matrix: 3.4.4
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.rendering-engine.camera-engine@3.18.2':
+    dependencies:
+      '@shapediver/viewer.rendering-engine.rendering-engine': 3.18.2
+      '@shapediver/viewer.settings': 1.3.0
+      '@shapediver/viewer.shared.math': 3.18.2
+      '@shapediver/viewer.shared.node-tree': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+      '@tweenjs/tween.js': 25.0.0
+      detect-it: 4.0.1
+      gl-matrix: 3.4.4
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.rendering-engine.canvas-engine@3.18.2':
+    dependencies:
+      '@shapediver/viewer.rendering-engine.rendering-engine': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      gl-matrix: 3.4.4
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.rendering-engine.intersection-engine@3.18.2':
+    dependencies:
+      '@shapediver/viewer.rendering-engine.rendering-engine': 3.18.2
+      '@shapediver/viewer.shared.math': 3.18.2
+      '@shapediver/viewer.shared.node-tree': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+      '@types/three': 0.162.0
+      detect-it: 4.0.1
+      gl-matrix: 3.4.4
+      three: 0.162.0
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.rendering-engine.light-engine@3.18.2':
+    dependencies:
+      '@shapediver/viewer.rendering-engine.rendering-engine': 3.18.2
+      '@shapediver/viewer.settings': 1.3.0
+      '@shapediver/viewer.shared.node-tree': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+      gl-matrix: 3.4.4
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.rendering-engine.rendering-engine-threejs@3.18.2':
+    dependencies:
+      '@shapediver/viewer.data-engine.gltf-converter': 3.18.2
+      '@shapediver/viewer.data-engine.shared-types': 3.18.2
+      '@shapediver/viewer.data-engine.tag3d-engine': 3.18.2
+      '@shapediver/viewer.rendering-engine.animation-engine': 3.18.2
+      '@shapediver/viewer.rendering-engine.animation-frame-engine': 3.18.2
+      '@shapediver/viewer.rendering-engine.camera-engine': 3.18.2
+      '@shapediver/viewer.rendering-engine.canvas-engine': 3.18.2
+      '@shapediver/viewer.rendering-engine.intersection-engine': 3.18.2
+      '@shapediver/viewer.rendering-engine.light-engine': 3.18.2
+      '@shapediver/viewer.rendering-engine.rendering-engine': 3.18.2
+      '@shapediver/viewer.shared.global-access-objects': 3.18.2
+      '@shapediver/viewer.shared.math': 3.18.2
+      '@shapediver/viewer.shared.node-tree': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+      '@tweenjs/tween.js': 25.0.0
+      '@types/stats.js': 0.17.4
+      '@types/three': 0.162.0
+      gl-matrix: 3.4.4
+      postprocessing: 6.35.3(three@0.162.0)
+      stats.js: 0.17.0
+      three: 0.162.0
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.rendering-engine.rendering-engine@3.18.2':
+    dependencies:
+      '@shapediver/viewer.shared.math': 3.18.2
+      '@shapediver/viewer.shared.node-tree': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+      gl-matrix: 3.4.4
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.session-engine.session-engine@3.18.2':
+    dependencies:
+      '@shapediver/sdk.geometry-api-sdk-v2': 3.4.2
+      '@shapediver/viewer.data-engine.shared-types': 3.18.2
+      '@shapediver/viewer.settings': 1.3.0
+      '@shapediver/viewer.shared.build-data': 3.18.2
+      '@shapediver/viewer.shared.global-access-objects': 3.18.2
+      '@shapediver/viewer.shared.node-tree': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+      '@shapediver/viewer.utils.mime-type': 1.1.0
+      gl-matrix: 3.4.4
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.session@3.18.2':
+    dependencies:
+      '@shapediver/sdk.geometry-api-sdk-v2': 3.4.2
+      '@shapediver/viewer.api.general': 3.18.2
+      '@shapediver/viewer.creation-control-center.session': 3.18.2
+      '@shapediver/viewer.data-engine.gltf-converter': 3.18.2
+      '@shapediver/viewer.data-engine.shared-types': 3.18.2
+      '@shapediver/viewer.session-engine.session-engine': 3.18.2
+      '@shapediver/viewer.shared.math': 3.18.2
+      '@shapediver/viewer.shared.node-tree': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.settings@1.3.0':
+    dependencies:
+      uuid: 14.0.0
+      zod: 4.4.3
+
+  '@shapediver/viewer.shared.build-data@3.18.2': {}
+
+  '@shapediver/viewer.shared.global-access-objects@3.18.2':
+    dependencies:
+      '@shapediver/sdk.geometry-api-sdk-v2': 3.4.2
+      '@shapediver/viewer.data-engine.shared-types': 3.18.2
+      '@shapediver/viewer.shared.node-tree': 3.18.2
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.shared.math@3.18.2':
+    dependencies:
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+      gl-matrix: 3.4.4
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.shared.node-tree@3.18.2':
+    dependencies:
+      '@shapediver/sdk.geometry-api-sdk-v2': 3.4.2
+      '@shapediver/sdk.sdtf-primitives': 1.7.3
+      '@shapediver/sdk.sdtf-v1': 1.7.3
+      '@shapediver/viewer.shared.math': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+      gl-matrix: 3.4.4
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.shared.services@3.18.2':
+    dependencies:
+      '@ctrl/tinycolor': 4.2.0
+      '@shapediver/sdk.geometry-api-sdk-v2': 3.4.2
+      '@shapediver/viewer.settings': 1.3.0
+      '@shapediver/viewer.shared.build-data': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+      '@types/ua-parser-js': 0.7.39
+      axios: 1.16.1
+      dompurify: 3.4.6
+      gl-matrix: 3.4.4
+      ua-parser-js: 1.0.39
+      uuid: 14.0.0
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.shared.types@3.18.2':
+    dependencies:
+      '@shapediver/sdk.geometry-api-sdk-v2': 3.4.2
+      '@shapediver/sdk.sdtf-primitives': 1.7.3
+      '@shapediver/sdk.sdtf-v1': 1.7.3
+      gl-matrix: 3.4.4
+      zod: 4.4.3
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer.utils.mime-type@1.1.0': {}
+
+  '@shapediver/viewer.viewport@3.18.2':
+    dependencies:
+      '@shapediver/sdk.geometry-api-sdk-v2': 3.4.2
+      '@shapediver/viewer.api.general': 3.18.2
+      '@shapediver/viewer.creation-control-center.viewport': 3.18.2
+      '@shapediver/viewer.data-engine.data-engine': 3.18.2
+      '@shapediver/viewer.data-engine.geometry-engine': 3.18.2
+      '@shapediver/viewer.data-engine.gltf-converter': 3.18.2
+      '@shapediver/viewer.data-engine.material-engine': 3.18.2
+      '@shapediver/viewer.data-engine.shared-types': 3.18.2
+      '@shapediver/viewer.rendering-engine.animation-engine': 3.18.2
+      '@shapediver/viewer.rendering-engine.camera-engine': 3.18.2
+      '@shapediver/viewer.rendering-engine.light-engine': 3.18.2
+      '@shapediver/viewer.rendering-engine.rendering-engine': 3.18.2
+      '@shapediver/viewer.rendering-engine.rendering-engine-threejs': 3.18.2
+      '@shapediver/viewer.settings': 1.3.0
+      '@shapediver/viewer.shared.build-data': 3.18.2
+      '@shapediver/viewer.shared.math': 3.18.2
+      '@shapediver/viewer.shared.node-tree': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+      '@types/qrcode': 1.5.6
+      '@types/three': 0.162.0
+      gl-matrix: 3.4.4
+      qrcode: 1.5.4
+      three: 0.162.0
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@shapediver/viewer@3.18.2':
+    dependencies:
+      '@shapediver/sdk.geometry-api-sdk-v2': 3.4.2
+      '@shapediver/viewer.api.general': 3.18.2
+      '@shapediver/viewer.creation-control-center.session': 3.18.2
+      '@shapediver/viewer.creation-control-center.viewport': 3.18.2
+      '@shapediver/viewer.data-engine.data-engine': 3.18.2
+      '@shapediver/viewer.data-engine.geometry-engine': 3.18.2
+      '@shapediver/viewer.data-engine.material-engine': 3.18.2
+      '@shapediver/viewer.data-engine.shared-types': 3.18.2
+      '@shapediver/viewer.rendering-engine.camera-engine': 3.18.2
+      '@shapediver/viewer.rendering-engine.light-engine': 3.18.2
+      '@shapediver/viewer.rendering-engine.rendering-engine': 3.18.2
+      '@shapediver/viewer.rendering-engine.rendering-engine-threejs': 3.18.2
+      '@shapediver/viewer.session': 3.18.2
+      '@shapediver/viewer.session-engine.session-engine': 3.18.2
+      '@shapediver/viewer.shared.math': 3.18.2
+      '@shapediver/viewer.shared.node-tree': 3.18.2
+      '@shapediver/viewer.shared.services': 3.18.2
+      '@shapediver/viewer.shared.types': 3.18.2
+      '@shapediver/viewer.viewport': 3.18.2
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  '@tweenjs/tween.js@23.1.3': {}
+
+  '@tweenjs/tween.js@25.0.0': {}
+
   '@types/node@24.13.2':
     dependencies:
       undici-types: 7.18.2
+
+  '@types/qrcode@1.5.6':
+    dependencies:
+      '@types/node': 24.13.2
+
+  '@types/stats.js@0.17.4': {}
+
+  '@types/three@0.162.0':
+    dependencies:
+      '@tweenjs/tween.js': 23.1.3
+      '@types/stats.js': 0.17.4
+      '@types/webxr': 0.5.24
+      fflate: 0.6.10
+      meshoptimizer: 0.18.1
+
+  '@types/trusted-types@2.0.7':
+    optional: true
+
+  '@types/ua-parser-js@0.7.39': {}
+
+  '@types/webxr@0.5.24': {}
+
+  agent-base@6.0.2:
+    dependencies:
+      debug: 4.4.3
+    transitivePeerDependencies:
+      - supports-color
+
+  ansi-regex@5.0.1: {}
+
+  ansi-styles@4.3.0:
+    dependencies:
+      color-convert: 2.0.1
+
+  asynckit@0.4.0: {}
+
+  axios@1.16.1:
+    dependencies:
+      follow-redirects: 1.16.0
+      form-data: 4.0.6
+      https-proxy-agent: 5.0.1
+      proxy-from-env: 2.1.0
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
+  browser-or-node@3.0.0: {}
+
+  call-bind-apply-helpers@1.0.2:
+    dependencies:
+      es-errors: 1.3.0
+      function-bind: 1.1.2
+
+  camelcase@5.3.1: {}
+
+  cliui@6.0.0:
+    dependencies:
+      string-width: 4.2.3
+      strip-ansi: 6.0.1
+      wrap-ansi: 6.2.0
+
+  color-convert@2.0.1:
+    dependencies:
+      color-name: 1.1.4
+
+  color-name@1.1.4: {}
+
+  combined-stream@1.0.8:
+    dependencies:
+      delayed-stream: 1.0.0
+
+  debug@4.4.3:
+    dependencies:
+      ms: 2.1.3
+
+  decamelize@1.2.0: {}
+
+  decimal.js@10.6.0: {}
+
+  delayed-stream@1.0.0: {}
+
+  detect-it@4.0.1: {}
+
+  dijkstrajs@1.0.3: {}
+
+  dompurify@3.4.6:
+    optionalDependencies:
+      '@types/trusted-types': 2.0.7
+
+  dunder-proto@1.0.1:
+    dependencies:
+      call-bind-apply-helpers: 1.0.2
+      es-errors: 1.3.0
+      gopd: 1.2.0
+
+  emoji-regex@8.0.0: {}
+
+  es-define-property@1.0.1: {}
+
+  es-errors@1.3.0: {}
+
+  es-object-atoms@1.1.2:
+    dependencies:
+      es-errors: 1.3.0
+
+  es-set-tostringtag@2.1.0:
+    dependencies:
+      es-errors: 1.3.0
+      get-intrinsic: 1.3.0
+      has-tostringtag: 1.0.2
+      hasown: 2.0.4
 
   esbuild@0.28.1:
     optionalDependencies:
@@ -342,11 +1325,101 @@ snapshots:
       '@esbuild/win32-ia32': 0.28.1
       '@esbuild/win32-x64': 0.28.1
 
+  fflate@0.6.10: {}
+
+  find-up@4.1.0:
+    dependencies:
+      locate-path: 5.0.0
+      path-exists: 4.0.0
+
+  follow-redirects@1.16.0: {}
+
+  form-data@4.0.6:
+    dependencies:
+      asynckit: 0.4.0
+      combined-stream: 1.0.8
+      es-set-tostringtag: 2.1.0
+      hasown: 2.0.4
+      mime-types: 2.1.35
+
   fsevents@2.3.2:
     optional: true
 
   fsevents@2.3.3:
     optional: true
+
+  function-bind@1.1.2: {}
+
+  get-caller-file@2.0.5: {}
+
+  get-intrinsic@1.3.0:
+    dependencies:
+      call-bind-apply-helpers: 1.0.2
+      es-define-property: 1.0.1
+      es-errors: 1.3.0
+      es-object-atoms: 1.1.2
+      function-bind: 1.1.2
+      get-proto: 1.0.1
+      gopd: 1.2.0
+      has-symbols: 1.1.0
+      hasown: 2.0.4
+      math-intrinsics: 1.1.0
+
+  get-proto@1.0.1:
+    dependencies:
+      dunder-proto: 1.0.1
+      es-object-atoms: 1.1.2
+
+  gl-matrix@3.4.4: {}
+
+  gopd@1.2.0: {}
+
+  has-symbols@1.1.0: {}
+
+  has-tostringtag@1.0.2:
+    dependencies:
+      has-symbols: 1.1.0
+
+  hasown@2.0.4:
+    dependencies:
+      function-bind: 1.1.2
+
+  https-proxy-agent@5.0.1:
+    dependencies:
+      agent-base: 6.0.2
+      debug: 4.4.3
+    transitivePeerDependencies:
+      - supports-color
+
+  is-fullwidth-code-point@3.0.0: {}
+
+  locate-path@5.0.0:
+    dependencies:
+      p-locate: 4.1.0
+
+  math-intrinsics@1.1.0: {}
+
+  meshoptimizer@0.18.1: {}
+
+  mime-db@1.52.0: {}
+
+  mime-types@2.1.35:
+    dependencies:
+      mime-db: 1.52.0
+
+  ms@2.1.3: {}
+
+  p-limit@2.3.0:
+    dependencies:
+      p-try: 2.2.0
+
+  p-locate@4.1.0:
+    dependencies:
+      p-limit: 2.3.0
+
+  p-try@2.2.0: {}
+
+  path-exists@4.0.0: {}
 
   playwright-core@1.61.1: {}
 
@@ -356,6 +1429,40 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.2
 
+  pngjs@5.0.0: {}
+
+  postprocessing@6.35.3(three@0.162.0):
+    dependencies:
+      three: 0.162.0
+
+  proxy-from-env@2.1.0: {}
+
+  qrcode@1.5.4:
+    dependencies:
+      dijkstrajs: 1.0.3
+      pngjs: 5.0.0
+      yargs: 15.4.1
+
+  require-directory@2.1.1: {}
+
+  require-main-filename@2.0.0: {}
+
+  set-blocking@2.0.0: {}
+
+  stats.js@0.17.0: {}
+
+  string-width@4.2.3:
+    dependencies:
+      emoji-regex: 8.0.0
+      is-fullwidth-code-point: 3.0.0
+      strip-ansi: 6.0.1
+
+  strip-ansi@6.0.1:
+    dependencies:
+      ansi-regex: 5.0.1
+
+  three@0.162.0: {}
+
   tsx@4.22.4:
     dependencies:
       esbuild: 0.28.1
@@ -364,4 +1471,39 @@ snapshots:
 
   typescript@5.9.3: {}
 
+  ua-parser-js@1.0.39: {}
+
   undici-types@7.18.2: {}
+
+  uuid@14.0.0: {}
+
+  which-module@2.0.1: {}
+
+  wrap-ansi@6.2.0:
+    dependencies:
+      ansi-styles: 4.3.0
+      string-width: 4.2.3
+      strip-ansi: 6.0.1
+
+  y18n@4.0.3: {}
+
+  yargs-parser@18.1.3:
+    dependencies:
+      camelcase: 5.3.1
+      decamelize: 1.2.0
+
+  yargs@15.4.1:
+    dependencies:
+      cliui: 6.0.0
+      decamelize: 1.2.0
+      find-up: 4.1.0
+      get-caller-file: 2.0.5
+      require-directory: 2.1.1
+      require-main-filename: 2.0.0
+      set-blocking: 2.0.0
+      string-width: 4.2.3
+      which-module: 2.0.1
+      y18n: 4.0.3
+      yargs-parser: 18.1.3
+
+  zod@4.4.3: {}

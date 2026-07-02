@@ -111,6 +111,8 @@ await editBlocksTab.click();
 
 Each template is a complete block you can copy. Change the names and coordinates to match your app.
 
+If a scenario expands into multiple cases because one or more params use arrays, an action registered for the base id (for example `my-app`) is reused for all expanded cases. Expanded array-param cases get separate baseline names automatically. Reusing the same `id` across multiple scenarios is also allowed, and those scenarios compare against the same baseline files.
+
 ### 1. Tab Click + Screenshot
 
 No `waitForModelRecomputed` needed — tabs only change the UI, not the model.
@@ -203,3 +205,58 @@ Set up a listener **before** clicking, then check the filename. No `waitForModel
   },
 }
 ```
+
+### 6. Output and export baselines in `scenarios.json`
+
+```json
+{
+  "id": "my-output-test",
+  "slug": "my-app-slug",
+  "outputs": [
+    {
+      "name": "AppBuilder"
+    }
+  ],
+  "exports": [
+    {
+      "name": "Image Export"
+    }
+  ]
+}
+```
+
+- `session` is optional and defaults to `"default"`
+- output baselines are stored under `tests/baselines/outputs/`
+- export baselines are stored under `tests/baselines/exports/`
+- export comparisons ignore all `href` properties recursively
+
+### 7. Shared defaults in `scenarios.json`
+
+```json
+{
+  "defaults": {
+    "slug": "my-app-slug",
+    "baseUrl": "https://appbuilder.shapediver.com/v1/main/latest/",
+    "params": {
+      "g": "./theme.json"
+    }
+  },
+  "scenarios": [
+    {
+      "id": "my-app"
+    },
+    {
+      "id": "my-app-with-state",
+      "params": {
+        "modelStateId": ["state-a", "state-b"]
+      }
+    }
+  ]
+}
+```
+
+- `defaults.slug` lets scenarios omit `slug`
+- `defaults.baseUrl` sets a project-level default App Builder URL
+- relative file values like `./theme.json` are resolved relative to `tests/config/scenarios.json` and converted to data URLs automatically
+- the action with `id: "my-app-with-state"` will run for both expanded cases
+- if you add another scenario with the same `id`, it will also run and reuse the same snapshot names

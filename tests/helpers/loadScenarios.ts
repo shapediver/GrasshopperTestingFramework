@@ -8,17 +8,35 @@ type RawParam = Scalar | Scalar[];
 export type ScenarioUrlParams = Record<string, Scalar>;
 type ScenarioUrlParamsInput = Record<string, RawParam>;
 
+export interface OutputBaselineConfig {
+  session?: string;
+  name: string;
+}
+
+export interface ExportBaselineConfig {
+  session?: string;
+  name: string;
+}
+
 export interface ScenarioConfig {
   id: string;
-  slug: string;
+  slug?: string;
   customUrl?: string;
+  baseUrl?: string;
   params?: ScenarioUrlParamsInput;
+  outputs?: OutputBaselineConfig[];
+  exports?: ExportBaselineConfig[];
+  baselineId?: string;
 }
 
 export interface ScenarioFile {
   defaults?: {
     timeoutMs?: number;
+    slug?: string;
+    baseUrl?: string;
     params?: ScenarioUrlParamsInput;
+    outputs?: OutputBaselineConfig[];
+    exports?: ExportBaselineConfig[];
   };
   scenarios: ScenarioConfig[];
 }
@@ -32,8 +50,34 @@ function cartesianProduct<T>(arrays: T[][]): T[][] {
   return first.flatMap((item) => restProduct.map((combo) => [item, ...combo]));
 }
 
+function mergeByKey<T>(
+  defaults: T[] | undefined,
+  overrides: T[] | undefined,
+  getKey: (item: T) => string,
+): T[] | undefined {
+  if (!defaults?.length && !overrides?.length) return undefined;
+
+  const merged = new Map<string, T>();
+  for (const item of defaults ?? []) merged.set(getKey(item), item);
+  for (const item of overrides ?? []) merged.set(getKey(item), item);
+  return [...merged.values()];
+}
+
+function createExpandedBaselineId(
+  baseId: string,
+  expandedEntries: Array<[string, Scalar]>,
+): string {
+  if (expandedEntries.length === 0) return baseId;
+
+  const suffix = expandedEntries
+    .map(([key, value]) => `${key}-${String(value)}`)
+    .join("-");
+
+  return `${baseId}-${suffix}`;
+}
+
 function expandScenarioArrays(config: ScenarioConfig): ScenarioConfig[] {
-  if (!config.params) return [config];
+  if (!config.params) return [{...config, baselineId: config.baselineId ?? config.id}];
 
   const scalarParams: Record<string, Scalar> = {};
   const arrayParams: [string, Scalar[]][] = [];
@@ -47,35 +91,60 @@ function expandScenarioArrays(config: ScenarioConfig): ScenarioConfig[] {
   }
 
   if (arrayParams.length === 0) {
-    return [{...config, params: scalarParams}];
+    return [{...config, baselineId: config.baselineId ?? config.id, params: scalarParams}];
   }
 
   const combinations = cartesianProduct(arrayParams.map(([_, values]) => values));
 
   return combinations.map((combination) => {
-    const suffix = combination.map(String).join("-");
+    const expandedEntries = arrayParams.map(
+      ([key], i) => [key, combination[i]] as [string, Scalar],
+    );
+
     return {
       ...config,
-      id: `${config.id}-${suffix}`,
+      id: config.id,
+      baselineId: createExpandedBaselineId(config.id, expandedEntries),
       params: {
         ...scalarParams,
-        ...Object.fromEntries(
-          arrayParams.map(([key], i) => [key, combination[i]]),
-        ),
+        ...Object.fromEntries(expandedEntries),
       },
     };
   });
 }
 
-function mergeDefaultParams(
+function mergeScenarioDefaults(
   scenario: ScenarioConfig,
-  defaultParams?: ScenarioUrlParamsInput,
+  defaults?: ScenarioFile["defaults"],
 ): ScenarioConfig {
-  if (!defaultParams || Object.keys(defaultParams).length === 0) return scenario;
+  if (!defaults) return {...scenario, baselineId: scenario.baselineId ?? scenario.id};
+
   return {
     ...scenario,
-    params: {...defaultParams, ...scenario.params},
+    baselineId: scenario.baselineId ?? scenario.id,
+    slug: scenario.slug ?? defaults.slug,
+    baseUrl: scenario.baseUrl ?? defaults.baseUrl,
+    params:
+      defaults.params || scenario.params
+        ? {...(defaults.params ?? {}), ...(scenario.params ?? {})}
+        : undefined,
+    outputs: mergeByKey(defaults.outputs, scenario.outputs, (item) => item.name),
+    exports: mergeByKey(defaults.exports, scenario.exports, (item) => item.name),
   };
+}
+
+function urlHasSlug(urlString?: string): boolean {
+  if (!urlString) return false;
+
+  try {
+    return new URL(urlString).searchParams.has("slug");
+  } catch {
+    return false;
+  }
+}
+
+export function getScenarioConfigPath(): string {
+  return SCENARIO_PATH;
 }
 
 export function loadScenarioFile(): ScenarioFile {
@@ -95,10 +164,28 @@ export function loadScenarioFile(): ScenarioFile {
     );
   }
 
+  const defaultHasSlug = !!parsed.defaults?.slug;
+  const defaultUrlHasSlug = urlHasSlug(parsed.defaults?.baseUrl);
+  const envUrlHasSlug = urlHasSlug(process.env.APPBUILDER_BASE_URL?.trim());
+
   for (const scenario of parsed.scenarios) {
     if (!scenario.id) {
       throw new Error(
-        `Missing "id" in ${SCENARIO_PATH}. Every scenario must have a unique "id".`,
+        `Missing "id" in ${SCENARIO_PATH}. Every scenario must have a non-empty "id". Reusing the same id across scenarios is allowed.`,
+      );
+    }
+
+    const scenarioHasSlugSource =
+      !!scenario.slug ||
+      defaultHasSlug ||
+      urlHasSlug(scenario.customUrl) ||
+      urlHasSlug(scenario.baseUrl) ||
+      defaultUrlHasSlug ||
+      envUrlHasSlug;
+
+    if (!scenarioHasSlugSource) {
+      throw new Error(
+        `Scenario "${scenario.id}" is missing a slug source in ${SCENARIO_PATH}. Provide scenario.slug, defaults.slug, or a URL that already contains ?slug=.`,
       );
     }
   }
@@ -111,10 +198,9 @@ export function loadScenarios(): {
   scenarios: ScenarioConfig[];
 } {
   const file = loadScenarioFile();
-  const defaultParams = file.defaults?.params;
 
   const expanded = file.scenarios.flatMap((scenario) => {
-    const merged = mergeDefaultParams(scenario, defaultParams);
+    const merged = mergeScenarioDefaults(scenario, file.defaults);
     return expandScenarioArrays(merged);
   });
 

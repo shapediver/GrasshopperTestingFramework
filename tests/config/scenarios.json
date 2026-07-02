@@ -8,6 +8,34 @@
       "slug": "webinar-2410-a-barcelonaneighbourhood"
     },
     {
+      "id": "shelf-export-test",
+      "slug": "shelf-youtube-exports",
+      "exports": [
+        {
+          "name": "Image Export"
+        }
+      ]
+    },
+    {
+      "id": "instance-output-test",
+      "slug": "251103-countingcontroller-2",
+      "outputs": [
+        {
+          "session": "instance_0",
+          "name": "Count Data"
+        }
+      ]
+    },
+    {
+      "id": "barcelona-output-test",
+      "slug": "webinar-2410-a-barcelonaneighbourhood",
+      "outputs": [
+        {
+          "name": "AppBuilder"
+        }
+      ]
+    },
+    {
       "id": "barcelona-modelStateId",
       "slug": "webinar-2410-a-barcelonaneighbourhood",
       "params": {

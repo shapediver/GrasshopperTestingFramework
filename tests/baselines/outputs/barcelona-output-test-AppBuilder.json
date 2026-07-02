@@ -1,0 +1,202 @@
+{
+  "containers": [
+    {
+      "name": "left",
+      "tabs": [
+        {
+          "name": "General",
+          "widgets": [
+            {
+              "props": {
+                "exports": [],
+                "parameters": [
+                  {
+                    "name": "Blocks Quantity X",
+                    "overrides": {
+                      "order": 2617
+                    }
+                  },
+                  {
+                    "name": "Blocks Quantity Y",
+                    "overrides": {
+                      "order": 2618
+                    }
+                  },
+                  {
+                    "name": "Default Block Size",
+                    "overrides": {
+                      "order": 2619
+                    }
+                  },
+                  {
+                    "name": "Default Courtyard Size",
+                    "overrides": {
+                      "order": 2620
+                    }
+                  },
+                  {
+                    "name": "Default Block Corner",
+                    "overrides": {
+                      "order": 2621
+                    }
+                  },
+                  {
+                    "name": "Default Max Building Length",
+                    "overrides": {
+                      "order": 2622
+                    }
+                  }
+                ]
+              },
+              "type": "accordion"
+            }
+          ]
+        },
+        {
+          "name": "Edit Blocks",
+          "widgets": [
+            {
+              "props": {
+                "exports": [],
+                "parameters": [
+                  {
+                    "name": "Select Block",
+                    "overrides": {
+                      "order": 2617
+                    }
+                  }
+                ]
+              },
+              "type": "accordion"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "right",
+      "tabs": [
+        {
+          "name": "General Stats",
+          "widgets": [
+            {
+              "props": {
+                "data": {
+                  "keys": [
+                    "1",
+                    "2",
+                    "3",
+                    "4"
+                  ],
+                  "series": [
+                    {
+                      "color": "rgba(255, 160, 0, 1)",
+                      "name": "Gross Floor Area",
+                      "values": [
+                        31687.5,
+                        27487.5,
+                        27387.5,
+                        25806.25
+                      ]
+                    }
+                  ]
+                },
+                "name": "Gross Floor Area",
+                "plotSettings": {
+                  "dots": true,
+                  "grid": "x",
+                  "legend": false,
+                  "xaxis": true,
+                  "xlabel": "Block",
+                  "yaxis": true,
+                  "ylabel": "Area"
+                },
+                "type": "default"
+              },
+              "type": "barChart"
+            },
+            {
+              "props": {
+                "data": {
+                  "keys": [
+                    "1",
+                    "2",
+                    "3",
+                    "4"
+                  ],
+                  "series": [
+                    {
+                      "color": "rgba(0, 196, 0, 1)",
+                      "name": "Open Area",
+                      "values": [
+                        1225,
+                        1225,
+                        1225,
+                        1225
+                      ]
+                    },
+                    {
+                      "color": "rgba(255, 160, 0, 1)",
+                      "name": "Built Area",
+                      "values": [
+                        3475,
+                        3475,
+                        3475,
+                        3475
+                      ]
+                    }
+                  ]
+                },
+                "name": "Built vs Open Area",
+                "plotSettings": {
+                  "dots": true,
+                  "grid": "x",
+                  "legend": true,
+                  "xaxis": true,
+                  "xlabel": "Block",
+                  "yaxis": true,
+                  "ylabel": "Area"
+                },
+                "type": "stacked"
+              },
+              "type": "barChart"
+            },
+            {
+              "props": {
+                "data": [
+                  {
+                    "color": "rgba(0, 196, 0, 1)",
+                    "name": "Open Area",
+                    "value": 4900
+                  },
+                  {
+                    "color": "rgba(255, 160, 0, 1)",
+                    "name": "Built Area",
+                    "value": 13900
+                  }
+                ],
+                "labels": true,
+                "legend": true,
+                "name": "Total Built Area vs Open Area",
+                "style": "donut"
+              },
+              "type": "roundChart"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "parameters": [
+    {
+      "defval": "{}",
+      "hidden": false,
+      "id": "appBuilderState",
+      "max": 10000,
+      "name": "appBuilderState",
+      "type": "String",
+      "value": "{}"
+    }
+  ],
+  "version": "1.0"
+}

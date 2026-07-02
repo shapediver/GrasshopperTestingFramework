@@ -1,4 +1,4 @@
-import {expect, Page} from "@playwright/test";
+import {expect, Page, test} from "@playwright/test";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -15,7 +15,7 @@ export async function takeSnapshot(
   } = {},
 ) {
   const {maxDiffPixelRatio = 0.02} = options;
-  const baselinePath = path.resolve(`tests/snapshots/${name}.png`);
+  const baselinePath = test.info().snapshotPath(`${name}.png`);
 
   if (!fs.existsSync(baselinePath)) {
     const screenshot = await page.screenshot({fullPage: true});

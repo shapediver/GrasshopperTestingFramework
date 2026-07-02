@@ -84,9 +84,15 @@ pnpm test:interaction
 pnpm test:ui
 ```
 
-### Update screenshots
+### Update screenshots and JSON baselines
 
-If you want to refresh existing screenshots after an expected change, run:
+If you want to refresh existing screenshots and JSON baselines after an expected change, run:
+
+```bash
+pnpm test:update
+```
+
+For compatibility, this also works:
 
 ```bash
 pnpm test:update-snapshots
@@ -100,7 +106,7 @@ Open:
 
 - `tests/config/scenarios.json`
 
-Add a new item inside `scenarios` with a unique `id` and a `slug`:
+Add a new item inside `scenarios` with an `id` and a `slug`:
 
 ```json
 {
@@ -110,6 +116,23 @@ Add a new item inside `scenarios` with a unique `id` and a `slug`:
 ```
 
 `id` is used for snapshot names and to connect a scenario with its interaction test. `slug` is the ShapeDiver model slug used to build the URL.
+
+`id` does not need to be unique. If multiple scenarios reuse the same `id`, all of them run, and they compare against the same snapshot files.
+
+If many scenarios use the same slug, you can define it once in `defaults` and omit it per scenario:
+
+```json
+{
+  "defaults": {
+    "slug": "my-app-slug"
+  },
+  "scenarios": [
+    {
+      "id": "my-app"
+    }
+  ]
+}
+```
 
 ### 2. Optional: add URL parameters
 
@@ -132,26 +155,29 @@ Example:
 }
 ```
 
-You can also define default parameters for all scenarios:
+You can also define shared defaults for all scenarios:
 
 ```json
 {
   "defaults": {
     "timeoutMs": 90000,
+    "slug": "my-app-slug",
+    "baseUrl": "https://appbuilder.shapediver.com/v1/main/latest/",
     "params": {
-      "g": "theme01.json"
+      "g": "./theme01.json"
     }
   },
   "scenarios": [
     {
-      "id": "my-app",
-      "slug": "my-app-slug"
+      "id": "my-app"
     }
   ]
 }
 ```
 
-Scenario-specific `params` override the default ones. You can also add multiple scenarios with the same slug but different ids and parameters to test different model states.
+Scenario-specific `slug`, `baseUrl`, and `params` override the defaults. Local file-like param values such as `./theme01.json` are resolved relative to `tests/config/scenarios.json` and converted to data URLs automatically.
+
+You can also add multiple scenarios with the same slug but different ids and parameters to test different model states.
 
 ### Use arrays to test many variations automatically
 
@@ -184,6 +210,13 @@ If you use multiple array params, the framework creates tests for every combinat
 
 This creates 4 tests: `my-model-a-light`, `my-model-a-dark`, `my-model-b-light`, `my-model-b-dark`.
 
+Expanded array-param cases get separate baseline names automatically, for example:
+
+- `my-model-modelStateId-state-a`
+- `my-model-modelStateId-state-b`
+
+If you define actions in `tests/config/scenarioActions.ts` with `id: "my-model"`, those actions apply to all expanded cases by default. If you reuse the same `id` across multiple scenarios in separate entries, they intentionally share the same baseline names.
+
 ### 3. Add interaction steps
 
 Open:
@@ -199,6 +232,52 @@ This file is where you add real test behavior such as:
 - downloading files
 - typing into inputs
 - taking extra screenshots
+
+### 3b. Optional: add output and export baselines
+
+You can also define structured JSON baseline checks directly in `tests/config/scenarios.json`.
+
+Outputs:
+
+```json
+{
+  "id": "my-output-test",
+  "slug": "my-app-slug",
+  "outputs": [
+    {
+      "name": "AppBuilder"
+    }
+  ]
+}
+```
+
+Exports:
+
+```json
+{
+  "id": "my-export-test",
+  "slug": "my-app-slug",
+  "exports": [
+    {
+      "name": "Image Export"
+    }
+  ]
+}
+```
+
+If omitted, `session` defaults to `"default"`:
+
+```json
+{
+  "name": "AppBuilder",
+  "session": "default"
+}
+```
+
+These baselines are stored as JSON in:
+
+- `tests/baselines/outputs/*.json`
+- `tests/baselines/exports/*.json`
 
 ### 4. Run the tests
 
@@ -227,6 +306,13 @@ APPBUILDER_VERSION=1.9.5 pnpm test
 APPBUILDER_BASE_URL=https://appbuilder.shapediver.com/v1/main/latest/ pnpm test
 ```
 
+URL precedence is:
+
+1. `scenario.customUrl`
+2. `APPBUILDER_BASE_URL`
+3. `defaults.baseUrl`
+4. built-in default `https://appbuilder.shapediver.com/v1/main/<version>/`
+
 ## Clicking in the 3D scene
 
 Some tests need to click the 3D viewport (canvas) instead of UI elements. Since the 3D scene is a WebGL canvas, you cannot use normal locators like `getByRole`. Instead, use normalized coordinates:
@@ -245,6 +331,8 @@ This repo includes a tool that opens your app and prints the coordinates whereve
 ```bash
 pnpm pick-coords <scenario-id>
 ```
+
+If the same `id` matches multiple scenarios, `pick-coords` cannot know which one you mean. In that case, temporarily make the target one unique before running the tool.
 
 Example:
 

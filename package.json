@@ -7,6 +7,7 @@
     "postinstall": "playwright install chromium",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
+    "test:update": "playwright test --update-snapshots",
     "test:update-snapshots": "playwright test --update-snapshots",
     "test:list": "playwright test --list",
     "test:simple-screenshots": "playwright test --grep @simple-screenshots",
@@ -18,6 +19,7 @@
     "@playwright/test": "^1.61.0",
     "tsx": "^4.19.0",
     "@types/node": "^24.0.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "@shapediver/viewer": "*"
   }
 }
