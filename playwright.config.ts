@@ -3,6 +3,7 @@ import {defineConfig, devices} from "@playwright/test";
 export default defineConfig({
   testDir: "./tests/specs",
   tsconfig: "./tests/tsconfig.json",
+  globalSetup: "./tests/global-setup.ts",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -15,7 +16,6 @@ export default defineConfig({
     timeout: 30_000,
     toHaveScreenshot: {
       maxDiffPixelRatio: 0.02,
-      timeout: 30_000,
     },
   },
   use: {

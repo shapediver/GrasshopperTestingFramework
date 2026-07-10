@@ -1,5 +1,8 @@
 node_modules/
 playwright-report/
 test-results/
+.pi-subagents/
 .DS_Store
 *.log
+.env.platform-access
+tests/config/.private-model-access.json

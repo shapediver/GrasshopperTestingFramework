@@ -52,6 +52,24 @@ Open a terminal in this folder and run:
 pnpm install
 ```
 
+## Private model access
+
+By default, scenarios are opened through public App Builder URLs using the configured `slug`. To test private models without changing `tests/config/scenarios.json` or `tests/config/scenarioActions.ts`, provide production ShapeDiver platform credentials.
+
+Local setup:
+
+1. Copy `.env.platform-access.example` to `.env.platform-access`.
+2. Fill in:
+   - `PLATFORM_CLIENT_ID`
+   - `PRODUCTION_PLATFORM_ACCESS_TOKEN_KEY`
+   - `PRODUCTION_PLATFORM_ACCESS_TOKEN_SECRET`
+
+To get this information, go on the ShapeDiver platform, Settings -> Developers -> PLATFORM BACKEND API ACCESS KEYS -> Create new. The access token needs **Models → Read** permission. For local convenience, the test setup first checks this repository's `.env.platform-access`, then falls back to `.env.platform-access` in your user home folder. CI can provide the same variables directly as environment variables.
+
+When production credentials are present, Playwright global setup fetches `ticket`, `modelViewUrl`, and `accessToken` for every configured scenario slug. The generated cache is written to `tests/config/.private-model-access.json` and is gitignored. Test URLs use the fetched values as query parameters (`ticket`, `modelViewUrl`, `accessToken`) plus `redirect=0`. If any configured slug cannot be resolved with the provided credentials, setup fails fast.
+
+If credentials are absent, the generated cache is removed and tests run through the normal public `?slug=` flow.
+
 ## Running tests
 
 ### See which tests exist

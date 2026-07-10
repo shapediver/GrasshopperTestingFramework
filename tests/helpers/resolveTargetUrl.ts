@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import {ScenarioConfig, ScenarioUrlParams, getScenarioConfigPath} from "./loadScenarios";
+import {getScenarioSlug, loadPrivateModelAccessCache} from "./privateModelAccess";
 
 const DEFAULT_HOST = "https://appbuilder.shapediver.com/v1/main";
 const DEFAULT_VERSION = "latest";
@@ -84,8 +85,33 @@ export function resolveTargetUrl(scenario: ScenarioConfig): string {
     scenario.baseUrl ||
     getDefaultBaseUrl();
   const url = new URL(baseUrl);
+  const privateModelAccessCache = loadPrivateModelAccessCache();
+  const params = {...(scenario.params as ScenarioUrlParams | undefined)};
 
-  if (!url.searchParams.has("slug")) {
+  if (privateModelAccessCache) {
+    const slug = getScenarioSlug(scenario, envBaseUrl);
+    if (!slug) {
+      throw new Error(
+        `Scenario "${scenario.id}" could not resolve a slug for private model access. Provide scenario.slug, defaults.slug, or a URL that already contains ?slug=.`,
+      );
+    }
+
+    const privateModelAccess = privateModelAccessCache.models[slug];
+    if (!privateModelAccess) {
+      throw new Error(
+        `Scenario "${scenario.id}" uses slug "${slug}", but no private model access data was generated for it. Re-run Playwright global setup and ensure the production platform credentials can read this model.`,
+      );
+    }
+
+    // Use App Builder's direct session query parameters. Keep any existing
+    // scenario params (including g) untouched; only replace the slug-based
+    // session source with credentialed private model access data.
+    url.searchParams.delete("slug");
+    params.ticket = privateModelAccess.ticket;
+    params.modelViewUrl = privateModelAccess.modelViewUrl;
+    params.accessToken = privateModelAccess.accessToken;
+    params.redirect = "0";
+  } else if (!url.searchParams.has("slug")) {
     if (!scenario.slug) {
       throw new Error(
         `Scenario "${scenario.id}" could not resolve a slug. Provide scenario.slug, defaults.slug, or a URL that already contains ?slug=.`,
@@ -95,7 +121,7 @@ export function resolveTargetUrl(scenario: ScenarioConfig): string {
     url.searchParams.set("slug", scenario.slug);
   }
 
-  applyParams(url, scenario.params as ScenarioUrlParams | undefined);
+  applyParams(url, params);
 
   return url.toString();
 }
