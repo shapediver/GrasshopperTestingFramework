@@ -92,11 +92,42 @@ If you want to refresh existing screenshots and JSON baselines after an expected
 pnpm test:update
 ```
 
-For compatibility, this also works:
+### Update a single scenario
+
+To refresh baselines and snapshots for only one scenario instead of all of them, use:
 
 ```bash
-pnpm test:update-snapshots
+pnpm update-scenario <scenario-id>
 ```
+
+Example:
+
+```bash
+pnpm update-scenario barcelona
+```
+
+This runs `--update-snapshots` scoped to tests matching the scenario id, so you can iterate on one scenario without re-running every other test.
+
+### Clean all test artifacts
+
+To delete all baselines, snapshots, and reset the scenario configs to a fresh state:
+
+```bash
+pnpm clean
+```
+
+This removes:
+
+- `tests/snapshots/*.png`
+- `tests/baselines/outputs/*.json`
+- `tests/baselines/exports/*.json`
+
+And resets:
+
+- `tests/config/scenarios.json` → empty `scenarios: []`
+- `tests/config/scenarioActions.ts` → empty `scenarioActions: []`
+
+Use this when starting a new project from the boilerplate or when you want to wipe all test data and begin fresh.
 
 ## Adding tests
 
