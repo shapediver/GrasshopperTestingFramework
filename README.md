@@ -16,6 +16,48 @@ One important feature is that if a baseline screenshot does not exist yet, this 
 
 **Get Started**: Fork this repository, point it at your ShapeDiver App Builder app, and configure your test cases to start safeguarding your Grasshopper workflows against breaking changes.
 
+## Creating a private repository copy
+
+As organization settings do not allow private forks, create an empty private repository first, then push a local clone of this public repository to it.
+
+```bash
+# 1. Clone the original public repository locally
+git clone https://github.com/shapediver/GrasshopperTestingFramework.git
+
+# 2. Move into the newly created directory
+cd GrasshopperTestingFramework
+
+# 3. Rename the public repo remote from "origin" to "upstream"
+git remote rename origin upstream
+
+# 4. Link your new empty private repository as the new "origin"
+git remote add origin https://github.com/shapediver/GrasshopperTestingFrameworkPrivate.git
+
+# 5. Push all existing branches to your private repository
+git push -u origin --all
+
+# 6. Push all tags to your private repository
+git push origin --tags
+```
+
+### Syncing public changes later
+
+When you want to pull future updates from the public repository into your private repository:
+
+```bash
+# 1. Fetch the latest changes from the public repo
+git fetch upstream
+
+# 2. Switch to your development branch
+git checkout development
+
+# 3. Merge the public updates into your private branch
+git merge upstream/development
+
+# 4. Push the updates to your private GitHub repository
+git push origin development
+```
+
 ## Files you will usually edit
 
 - `tests/config/scenarios.json` → which slugs and URL parameters to test
