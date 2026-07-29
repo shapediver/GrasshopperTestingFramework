@@ -245,8 +245,10 @@ instance session, replace either list with `"all"`:
 All items in a category are stored in one baseline. Export-all requests every
 export, so it consumes the corresponding ShapeDiver export credits. Successful
 exports with no downloadable content (such as email exports) are stored as an
-empty result. Output-all skips display outputs without `content[0].data` (such
-as glTF geometry), which are covered by screenshot tests.
+empty result. Output-all records every output's complete `content` array,
+including all items in multi-item data outputs. For outputs with no data item
+(such as glTF geometry), volatile `href` values are removed recursively before
+comparison.
 
 ### 7. Shared defaults in `scenarios.json`
 

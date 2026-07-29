@@ -217,10 +217,27 @@ async function readExportData(
 // main model and its instances without needing their names in the config.
 async function readAllOutputData(page: import("@playwright/test").Page) {
   return page.evaluate(() => {
+    const stripHref = (value: unknown): unknown => {
+      if (Array.isArray(value)) return value.map(stripHref);
+      if (value && typeof value === "object") {
+        return Object.fromEntries(
+          Object.entries(value as Record<string, unknown>)
+            .filter(([key]) => key !== "href")
+            .map(([key, nestedValue]) => [key, stripHref(nestedValue)]),
+        );
+      }
+      return value;
+    };
+
     const sessions = (window as any).SDV?.sessions as
       | Record<
           string,
-          { outputs?: Record<string, { id?: string; name?: string; content?: Array<{ data?: unknown }> }> }
+          {
+            outputs?: Record<
+              string,
+              { id?: string; name?: string; content?: Array<{ data?: unknown }> }
+            >;
+          }
         >
       | undefined;
 
@@ -231,16 +248,14 @@ async function readAllOutputData(page: import("@playwright/test").Page) {
     const entries: Array<[string, unknown]> = [];
     for (const [sessionName, session] of Object.entries(sessions)) {
       for (const [outputId, output] of Object.entries(session.outputs ?? {})) {
-        const data = output.content?.[0]?.data;
-        if (data === undefined) {
-          // Geometry/display outputs (for example glTF) commonly have no data
-          // payload. They are covered by screenshot testing and are not JSON
-          // baseline candidates, so omit them from the all-output baseline.
-          continue;
-        }
+        const content = output.content ?? [];
+        const hasDataItem = content.some((item) => item.data !== undefined);
         entries.push([
           `${sessionName}/${output.name ?? outputId} (${output.id ?? outputId})`,
-          data,
+          // Keep the complete content array so multi-item data outputs are
+          // fully tested. Asset/display-only outputs have temporary download
+          // URLs removed before comparison.
+          hasDataItem ? content : stripHref(content),
         ]);
       }
     }
