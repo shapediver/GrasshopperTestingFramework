@@ -1,5 +1,43 @@
 import {Page} from "@playwright/test";
 
+const IJewelCanvasSampleIntervalMs = 250;
+const IJewelCanvasStableSamples = 3;
+const IJewelUnchangedCanvasFallbackMs = 4_000;
+
+async function waitForIjewelCanvasToSettle(
+  page: Page,
+  beforeAction: Buffer,
+  timeout: number,
+): Promise<void> {
+  const canvas = page.locator("canvas").first();
+  const deadline = Date.now() + timeout;
+  const unchangedCanvasDeadline = Date.now() + IJewelUnchangedCanvasFallbackMs;
+  let previous = beforeAction;
+  let canvasChanged = false;
+  let stableSamples = 0;
+
+  while (Date.now() < deadline) {
+    const current = await canvas.screenshot();
+
+    if (current.equals(previous)) {
+      stableSamples += 1;
+    } else {
+      canvasChanged = true;
+      stableSamples = 0;
+      previous = current;
+    }
+
+    if (canvasChanged && stableSamples >= IJewelCanvasStableSamples) return;
+    if (!canvasChanged && Date.now() >= unchangedCanvasDeadline) return;
+
+    await page.waitForTimeout(IJewelCanvasSampleIntervalMs);
+  }
+
+  throw new Error(
+    `Timed out after ${timeout} ms waiting for the iJewel canvas to settle.`,
+  );
+}
+
 /**
  * Performs an action and waits until its customized model has completed its
  * final beauty render.
@@ -10,47 +48,83 @@ import {Page} from "@playwright/test";
  * also be ignored, so both listeners are installed before the action and the
  * render event is only accepted after customization was observed. Continuous
  * rendering does not emit a beauty-render completion event; in that mode a
- * stable, non-busy viewport is the completion signal instead.
+ * stable, non-busy viewport is the completion signal instead. iJewel uses
+ * WebGi, so it waits for its loading overlay and canvas to settle instead.
  */
 export async function waitForModelRecomputed(
   page: Page,
   action: () => Promise<void>,
   timeout = 90_000,
 ): Promise<void> {
-  await page.evaluate(() => {
+  const isIjewel3d = /\/ijewel3d\//.test(page.url());
+  const ijewelCanvasBeforeAction = isIjewel3d
+    ? await page.locator("canvas").first().screenshot()
+    : undefined;
+
+  await page.evaluate((isIjewel3d) => {
     const SDV = (window as any).SDV;
     const state = {
+      isIjewel3d,
       customized: false,
       beautyRenderFinished: false,
       busyFreeSince: 0,
+      loadingScreenSeen: false,
+      loadingScreenIdleSince: 0,
       customizationToken: "",
       beautyRenderToken: "",
+      loadingScreenObserver: null as MutationObserver | null,
     };
 
     (window as any).__sdvModelRecomputed = state;
+
+    const isLoadingScreenVisible = () => {
+      const loadingScreen = document.querySelector("#assetManagerLoadingScreen");
+      if (!loadingScreen) return false;
+      const style = getComputedStyle(loadingScreen);
+      return style.display !== "none" && style.visibility !== "hidden";
+    };
+
+    if (isIjewel3d) {
+      state.loadingScreenObserver = new MutationObserver(() => {
+        if (isLoadingScreenVisible()) {
+          state.loadingScreenSeen = true;
+          state.loadingScreenIdleSince = 0;
+        }
+      });
+      state.loadingScreenObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["class", "style"],
+        childList: true,
+        subtree: true,
+      });
+    }
 
     state.customizationToken = SDV.addListener(
       SDV.EVENTTYPE?.SESSION?.SESSION_CUSTOMIZED ?? "session.customized",
       () => {
         state.customized = true;
+        if (isIjewel3d && isLoadingScreenVisible())
+          state.loadingScreenSeen = true;
       },
     );
-    state.beautyRenderToken = SDV.addListener(
-      SDV.EVENTTYPE?.RENDERING?.BEAUTY_RENDERING_FINISHED ??
-        "rendering.beautyRenderingFinished",
-      () => {
-        // Ignore any render that was already in progress before this action's
-        // customization. This commonly happens while an AppBuilder instance
-        // pipeline is still replacing scene-tree nodes.
-        const viewports = Object.values(SDV.viewports ?? {}) as any[];
-        const continuousRendering = viewports.some(
-          (viewport) => viewport.continuousRendering === true,
-        );
-        if (state.customized && !continuousRendering)
-          state.beautyRenderFinished = true;
-      },
-    );
-  });
+    if (!isIjewel3d) {
+      state.beautyRenderToken = SDV.addListener(
+        SDV.EVENTTYPE?.RENDERING?.BEAUTY_RENDERING_FINISHED ??
+          "rendering.beautyRenderingFinished",
+        () => {
+          // Ignore any render that was already in progress before this action's
+          // customization. This commonly happens while an AppBuilder instance
+          // pipeline is still replacing scene-tree nodes.
+          const viewports = Object.values(SDV.viewports ?? {}) as any[];
+          const continuousRendering = viewports.some(
+            (viewport) => viewport.continuousRendering === true,
+          );
+          if (state.customized && !continuousRendering)
+            state.beautyRenderFinished = true;
+        },
+      );
+    }
+  }, isIjewel3d);
 
   try {
     await action();
@@ -59,6 +133,31 @@ export async function waitForModelRecomputed(
       () => {
         const state = (window as any).__sdvModelRecomputed;
         if (!state?.customized) return false;
+
+        if (state.isIjewel3d) {
+          const loadingScreen = document.querySelector(
+            "#assetManagerLoadingScreen",
+          );
+          const style = loadingScreen && getComputedStyle(loadingScreen);
+          const loading =
+            !!style &&
+            style.display !== "none" &&
+            style.visibility !== "hidden";
+          if (loading) {
+            state.loadingScreenSeen = true;
+            state.loadingScreenIdleSince = 0;
+            return false;
+          }
+          if (state.loadingScreenSeen) return true;
+
+          const now = Date.now();
+          if (!state.loadingScreenIdleSince) {
+            state.loadingScreenIdleSince = now;
+            return false;
+          }
+          return now - state.loadingScreenIdleSince >= 500;
+        }
+
         if (state.beautyRenderFinished) return true;
 
         const viewports = Object.values((window as any).SDV?.viewports ?? {}) as any[];
@@ -87,6 +186,14 @@ export async function waitForModelRecomputed(
       },
       {timeout},
     );
+
+    if (isIjewel3d) {
+      await waitForIjewelCanvasToSettle(
+        page,
+        ijewelCanvasBeforeAction!,
+        timeout,
+      );
+    }
   } finally {
     await page.evaluate(() => {
       const SDV = (window as any).SDV;
@@ -94,7 +201,9 @@ export async function waitForModelRecomputed(
 
       if (state) {
         SDV.removeListener(state.customizationToken);
-        SDV.removeListener(state.beautyRenderToken);
+        if (state.beautyRenderToken)
+          SDV.removeListener(state.beautyRenderToken);
+        state.loadingScreenObserver?.disconnect();
       }
       delete (window as any).__sdvModelRecomputed;
     });
