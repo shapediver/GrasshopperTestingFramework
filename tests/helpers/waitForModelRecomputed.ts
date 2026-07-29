@@ -28,6 +28,7 @@ export async function waitForModelRecomputed(
       customized: false,
       beautyRenderFinished: false,
       busyFreeSince: 0,
+      lastCustomizationAt: 0,
       loadingScreenSeen: false,
       loadingScreenIdleSince: 0,
       customizationToken: "",
@@ -65,6 +66,11 @@ export async function waitForModelRecomputed(
       SDV.EVENTTYPE?.SESSION?.SESSION_CUSTOMIZED ?? "session.customized",
       () => {
         state.customized = true;
+        // AppBuilder instances can trigger follow-up customizations. A beauty
+        // event from an earlier pass must not satisfy the later one.
+        state.beautyRenderFinished = false;
+        state.busyFreeSince = 0;
+        state.lastCustomizationAt = Date.now();
         if (isIjewel3d && isLoadingScreenVisible())
           state.loadingScreenSeen = true;
       },
@@ -120,9 +126,18 @@ export async function waitForModelRecomputed(
           return now - state.loadingScreenIdleSince >= 500;
         }
 
-        if (state.beautyRenderFinished) return true;
+        const now = Date.now();
+        // A final beauty event must belong to the last observed customization,
+        // not an intermediate controller or instance pass.
+        if (
+          state.beautyRenderFinished &&
+          now - state.lastCustomizationAt >= 500
+        )
+          return true;
 
-        const viewports = Object.values((window as any).SDV?.viewports ?? {}) as any[];
+        const viewports = Object.values(
+          (window as any).SDV?.viewports ?? {},
+        ) as any[];
         const continuousRendering = viewports.some(
           (viewport) => viewport.continuousRendering === true,
         );
@@ -136,7 +151,7 @@ export async function waitForModelRecomputed(
           return false;
         }
 
-        const now = Date.now();
+        if (now - state.lastCustomizationAt < 500) return false;
         if (!state.busyFreeSince) {
           state.busyFreeSince = now;
           return false;
