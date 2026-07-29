@@ -8,7 +8,9 @@ import {Page} from "@playwright/test";
  * emitted before the AppBuilder instance pipeline finishes updating the scene
  * tree. A beauty-render event that occurred before that customization must
  * also be ignored, so both listeners are installed before the action and the
- * render event is only accepted after customization was observed.
+ * render event is only accepted after customization was observed. Continuous
+ * rendering does not emit a beauty-render completion event; in that mode a
+ * stable, non-busy viewport is the completion signal instead.
  */
 export async function waitForModelRecomputed(
   page: Page,
@@ -20,6 +22,7 @@ export async function waitForModelRecomputed(
     const state = {
       customized: false,
       beautyRenderFinished: false,
+      busyFreeSince: 0,
       customizationToken: "",
       beautyRenderToken: "",
     };
@@ -39,7 +42,12 @@ export async function waitForModelRecomputed(
         // Ignore any render that was already in progress before this action's
         // customization. This commonly happens while an AppBuilder instance
         // pipeline is still replacing scene-tree nodes.
-        if (state.customized) state.beautyRenderFinished = true;
+        const viewports = Object.values(SDV.viewports ?? {}) as any[];
+        const continuousRendering = viewports.some(
+          (viewport) => viewport.continuousRendering === true,
+        );
+        if (state.customized && !continuousRendering)
+          state.beautyRenderFinished = true;
       },
     );
   });
@@ -50,7 +58,32 @@ export async function waitForModelRecomputed(
     await page.waitForFunction(
       () => {
         const state = (window as any).__sdvModelRecomputed;
-        return state?.customized === true && state?.beautyRenderFinished === true;
+        if (!state?.customized) return false;
+        if (state.beautyRenderFinished) return true;
+
+        const viewports = Object.values((window as any).SDV?.viewports ?? {}) as any[];
+        const continuousRendering = viewports.some(
+          (viewport) => viewport.continuousRendering === true,
+        );
+        if (!continuousRendering) return false;
+
+        const allViewportsIdle = viewports.every(
+          (viewport) => !(viewport.busy ?? viewport.isBusy),
+        );
+        if (!allViewportsIdle) {
+          state.busyFreeSince = 0;
+          return false;
+        }
+
+        const now = Date.now();
+        if (!state.busyFreeSince) {
+          state.busyFreeSince = now;
+          return false;
+        }
+
+        // Allow the continuously-rendered scene to paint after its final
+        // process/busy cycle has completed.
+        return now - state.busyFreeSince >= 500;
       },
       {timeout},
     );
