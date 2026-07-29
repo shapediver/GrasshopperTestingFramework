@@ -2,16 +2,17 @@ import { Page } from "@playwright/test";
 
 /**
  * Performs an action and waits until its customized model has completed its
- * final beauty render.
+ * final beauty render and instance-scene updates.
  *
  * `session.customized` alone is too early for AppBuilder instances: it is
  * emitted before the AppBuilder instance pipeline finishes updating the scene
  * tree. A beauty-render event that occurred before that customization must
  * also be ignored, so both listeners are installed before the action and the
- * render event is only accepted after customization was observed. Continuous
- * rendering does not emit a beauty-render completion event; in that mode a
- * stable, non-busy viewport is the completion signal instead. iJewel uses
- * WebGi, so it waits for its loading overlay and canvas to settle instead.
+ * render event is only accepted after customization was observed. Both normal
+ * and continuous rendering must then leave every viewport continuously idle:
+ * App Builder can receive a beauty-render event before its instance pipeline
+ * finishes updating the scene tree. iJewel uses WebGi, so it waits for its
+ * loading overlay instead.
  */
 export async function waitForModelRecomputed(
   page: Page,
@@ -27,6 +28,7 @@ export async function waitForModelRecomputed(
       customized: false,
       beautyRenderFinished: false,
       busyFreeSince: 0,
+      lastCustomizationAt: 0,
       loadingScreenSeen: false,
       loadingScreenIdleSince: 0,
       customizationToken: "",
@@ -64,6 +66,8 @@ export async function waitForModelRecomputed(
       SDV.EVENTTYPE?.SESSION?.SESSION_CUSTOMIZED ?? "session.customized",
       () => {
         state.customized = true;
+        state.lastCustomizationAt = Date.now();
+        state.busyFreeSince = 0;
         if (isIjewel3d && isLoadingScreenVisible())
           state.loadingScreenSeen = true;
       },
@@ -119,15 +123,16 @@ export async function waitForModelRecomputed(
           return now - state.loadingScreenIdleSince >= 500;
         }
 
-        if (state.beautyRenderFinished) return true;
-
         const viewports = Object.values(
           (window as any).SDV?.viewports ?? {},
         ) as any[];
+        if (viewports.length === 0) return false;
         const continuousRendering = viewports.some(
           (viewport) => viewport.continuousRendering === true,
         );
-        if (!continuousRendering) return false;
+        // A non-continuous viewport needs its final render event; a
+        // continuously-rendered viewport does not emit one.
+        if (!continuousRendering && !state.beautyRenderFinished) return false;
 
         const allViewportsIdle = viewports.every(
           (viewport) => !(viewport.busy ?? viewport.isBusy),
@@ -138,6 +143,9 @@ export async function waitForModelRecomputed(
         }
 
         const now = Date.now();
+        // Let any related SESSION_CUSTOMIZED notifications from App Builder
+        // instances arrive before accepting an otherwise-idle viewport.
+        if (now - state.lastCustomizationAt < 500) return false;
         if (!state.busyFreeSince) {
           state.busyFreeSince = now;
           return false;
