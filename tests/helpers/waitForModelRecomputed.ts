@@ -28,7 +28,6 @@ export async function waitForModelRecomputed(
       customized: false,
       beautyRenderFinished: false,
       busyFreeSince: 0,
-      lastCustomizationAt: 0,
       loadingScreenSeen: false,
       loadingScreenIdleSince: 0,
       customizationToken: "",
@@ -66,8 +65,6 @@ export async function waitForModelRecomputed(
       SDV.EVENTTYPE?.SESSION?.SESSION_CUSTOMIZED ?? "session.customized",
       () => {
         state.customized = true;
-        state.lastCustomizationAt = Date.now();
-        state.busyFreeSince = 0;
         if (isIjewel3d && isLoadingScreenVisible())
           state.loadingScreenSeen = true;
       },
@@ -123,16 +120,13 @@ export async function waitForModelRecomputed(
           return now - state.loadingScreenIdleSince >= 500;
         }
 
-        const viewports = Object.values(
-          (window as any).SDV?.viewports ?? {},
-        ) as any[];
-        if (viewports.length === 0) return false;
+        if (state.beautyRenderFinished) return true;
+
+        const viewports = Object.values((window as any).SDV?.viewports ?? {}) as any[];
         const continuousRendering = viewports.some(
           (viewport) => viewport.continuousRendering === true,
         );
-        // A non-continuous viewport needs its final render event; a
-        // continuously-rendered viewport does not emit one.
-        if (!continuousRendering && !state.beautyRenderFinished) return false;
+        if (!continuousRendering) return false;
 
         const allViewportsIdle = viewports.every(
           (viewport) => !(viewport.busy ?? viewport.isBusy),
@@ -143,9 +137,6 @@ export async function waitForModelRecomputed(
         }
 
         const now = Date.now();
-        // Let any related SESSION_CUSTOMIZED notifications from App Builder
-        // instances arrive before accepting an otherwise-idle viewport.
-        if (now - state.lastCustomizationAt < 500) return false;
         if (!state.busyFreeSince) {
           state.busyFreeSince = now;
           return false;
