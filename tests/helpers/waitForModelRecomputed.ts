@@ -126,23 +126,10 @@ export async function waitForModelRecomputed(
           return now - state.loadingScreenIdleSince >= 500;
         }
 
-        const now = Date.now();
-        // A final beauty event must belong to the last observed customization,
-        // not an intermediate controller or instance pass.
-        if (
-          state.beautyRenderFinished &&
-          now - state.lastCustomizationAt >= 500
-        )
-          return true;
-
         const viewports = Object.values(
           (window as any).SDV?.viewports ?? {},
         ) as any[];
-        const continuousRendering = viewports.some(
-          (viewport) => viewport.continuousRendering === true,
-        );
-        if (!continuousRendering) return false;
-
+        if (viewports.length === 0) return false;
         const allViewportsIdle = viewports.every(
           (viewport) => !(viewport.busy ?? viewport.isBusy),
         );
@@ -151,11 +138,26 @@ export async function waitForModelRecomputed(
           return false;
         }
 
+        const now = Date.now();
         if (now - state.lastCustomizationAt < 500) return false;
         if (!state.busyFreeSince) {
           state.busyFreeSince = now;
           return false;
         }
+
+        // A final beauty event must belong to the last observed customization,
+        // and the viewport busy mode must have remained off long enough for the
+        // final scene update to be painted.
+        if (
+          state.beautyRenderFinished &&
+          now - state.busyFreeSince >= 500
+        )
+          return true;
+
+        const continuousRendering = viewports.some(
+          (viewport) => viewport.continuousRendering === true,
+        );
+        if (!continuousRendering) return false;
 
         // Allow the continuously-rendered scene to paint after its final
         // process/busy cycle has completed.
