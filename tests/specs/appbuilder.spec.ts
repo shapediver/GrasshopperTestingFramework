@@ -12,6 +12,8 @@ import { takeSnapshot } from "../helpers/takeSnapshot";
 import { waitForAppReady } from "../helpers/waitForAppReady";
 
 const { defaults, scenarios } = loadScenarios();
+const scenarioTestTimeout =
+  defaults?.testTimeoutMs ?? Math.max(180_000, (defaults?.timeoutMs ?? 90_000) + 60_000);
 
 // Open a scenario, wait until App Builder is ready, and fail early on obvious page issues.
 async function openScenario(
@@ -325,6 +327,10 @@ for (const scenario of scenarios) {
       : `${baselineId}${"\u200B".repeat(titleCount - 1)}`;
 
   test.describe(internalTitle, () => {
+    // Give rendering and the test action independent budget. A readiness wait
+    // may legitimately consume most of timeoutMs for heavy WebGi scenes.
+    test.describe.configure({timeout: scenarioTestTimeout});
+
     test("@simple-screenshots baseline screenshot", async ({ page }) => {
       await openScenario(page, url, baselineId, setup);
       await takeSnapshot(page, baselineId);

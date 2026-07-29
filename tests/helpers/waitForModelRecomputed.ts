@@ -1,43 +1,5 @@
 import {Page} from "@playwright/test";
 
-const IJewelCanvasSampleIntervalMs = 250;
-const IJewelCanvasStableSamples = 3;
-const IJewelUnchangedCanvasFallbackMs = 4_000;
-
-async function waitForIjewelCanvasToSettle(
-  page: Page,
-  beforeAction: Buffer,
-  timeout: number,
-): Promise<void> {
-  const canvas = page.locator("canvas").first();
-  const deadline = Date.now() + timeout;
-  const unchangedCanvasDeadline = Date.now() + IJewelUnchangedCanvasFallbackMs;
-  let previous = beforeAction;
-  let canvasChanged = false;
-  let stableSamples = 0;
-
-  while (Date.now() < deadline) {
-    const current = await canvas.screenshot();
-
-    if (current.equals(previous)) {
-      stableSamples += 1;
-    } else {
-      canvasChanged = true;
-      stableSamples = 0;
-      previous = current;
-    }
-
-    if (canvasChanged && stableSamples >= IJewelCanvasStableSamples) return;
-    if (!canvasChanged && Date.now() >= unchangedCanvasDeadline) return;
-
-    await page.waitForTimeout(IJewelCanvasSampleIntervalMs);
-  }
-
-  throw new Error(
-    `Timed out after ${timeout} ms waiting for the iJewel canvas to settle.`,
-  );
-}
-
 /**
  * Performs an action and waits until its customized model has completed its
  * final beauty render.
@@ -49,7 +11,7 @@ async function waitForIjewelCanvasToSettle(
  * render event is only accepted after customization was observed. Continuous
  * rendering does not emit a beauty-render completion event; in that mode a
  * stable, non-busy viewport is the completion signal instead. iJewel uses
- * WebGi, so it waits for its loading overlay and canvas to settle instead.
+ * WebGi, so it waits for its loading overlay instead.
  */
 export async function waitForModelRecomputed(
   page: Page,
@@ -57,9 +19,6 @@ export async function waitForModelRecomputed(
   timeout = 90_000,
 ): Promise<void> {
   const isIjewel3d = /\/ijewel3d\//.test(page.url());
-  const ijewelCanvasBeforeAction = isIjewel3d
-    ? await page.locator("canvas").first().screenshot()
-    : undefined;
 
   await page.evaluate((isIjewel3d) => {
     const SDV = (window as any).SDV;
@@ -187,13 +146,6 @@ export async function waitForModelRecomputed(
       {timeout},
     );
 
-    if (isIjewel3d) {
-      await waitForIjewelCanvasToSettle(
-        page,
-        ijewelCanvasBeforeAction!,
-        timeout,
-      );
-    }
   } finally {
     await page.evaluate(() => {
       const SDV = (window as any).SDV;

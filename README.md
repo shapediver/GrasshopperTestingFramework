@@ -273,6 +273,7 @@ You can also define shared defaults for all scenarios:
 {
   "defaults": {
     "timeoutMs": 90000,
+    "testTimeoutMs": 180000,
     "slug": "my-app-slug",
     "baseUrl": "https://appbuilder.shapediver.com/v1/main/latest/",
     "params": {

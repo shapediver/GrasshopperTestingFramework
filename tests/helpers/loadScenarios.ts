@@ -35,6 +35,7 @@ export interface ScenarioConfig {
 export interface ScenarioFile {
   defaults?: {
     timeoutMs?: number;
+    testTimeoutMs?: number;
     slug?: string;
     baseUrl?: string;
     params?: ScenarioUrlParamsInput;
@@ -216,7 +217,7 @@ export function loadScenarioFile(): ScenarioFile {
 }
 
 export function loadScenarios(): {
-  defaults: {timeoutMs?: number};
+  defaults: {timeoutMs?: number; testTimeoutMs?: number};
   scenarios: ScenarioConfig[];
 } {
   const file = loadScenarioFile();
@@ -227,7 +228,12 @@ export function loadScenarios(): {
   });
 
   return {
-    defaults: file.defaults?.timeoutMs ? {timeoutMs: file.defaults.timeoutMs} : {},
+    defaults: {
+      ...(file.defaults?.timeoutMs ? {timeoutMs: file.defaults.timeoutMs} : {}),
+      ...(file.defaults?.testTimeoutMs
+        ? {testTimeoutMs: file.defaults.testTimeoutMs}
+        : {}),
+    },
     scenarios: expanded,
   };
 }

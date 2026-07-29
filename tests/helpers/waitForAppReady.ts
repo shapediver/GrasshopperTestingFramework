@@ -1,40 +1,14 @@
 import {Page} from "@playwright/test";
 
-async function waitForIjewelCanvasToSettle(
-  page: Page,
-  timeout: number,
-): Promise<void> {
-  const canvas = page.locator("canvas").first();
-  const deadline = Date.now() + timeout;
-  let previous = await canvas.screenshot();
-  let stableSamples = 0;
-
-  while (Date.now() < deadline) {
-    await page.waitForTimeout(250);
-    const current = await canvas.screenshot();
-
-    if (current.equals(previous)) {
-      stableSamples += 1;
-      if (stableSamples >= 3) return;
-    } else {
-      previous = current;
-      stableSamples = 0;
-    }
-  }
-
-  throw new Error(
-    `Timed out after ${timeout} ms waiting for the iJewel canvas to settle.`,
-  );
-}
-
 /**
  * Waits until the AppBuilder page is usable.
  *
  * Detection strategy depends on the app variant:
  * - For standard App Builder URLs: waits for Mantine loader, then checks
  *   window.SDV.viewports to settle out of busy mode (standard viewer API).
- * - For ijewel3d URLs (containing "/ijewel3d/"): waits for Mantine loader, visible
- *   canvas, then waits for the webGi LoadingScreenPlugin overlay to disappear.
+ * - For ijewel3d URLs (containing "/ijewel3d/"): waits for Mantine loader,
+ *   canvas initialization, then waits for the webGi LoadingScreenPlugin overlay
+ *   to disappear.
  */
 export async function waitForAppReady(
   page: Page,
@@ -82,9 +56,9 @@ export async function waitForAppReady(
       {timeout, polling: 100},
     );
 
-    // The loading overlay is hidden as the WebGi processing callback begins.
-    // Wait for its output to stop changing before treating the app as ready.
-    await waitForIjewelCanvasToSettle(page, timeout);
+    // Do not sample the canvas with locator.screenshot() here. WebGi can keep
+    // rendering a heavy scene continuously, so Playwright's element-stability
+    // check may never complete even though the app is ready for interaction.
   } else {
     // Step 2 (standard): Wait until window.SDV is available, at least one
     // viewport exists, and all viewports have been continuously not-busy for
