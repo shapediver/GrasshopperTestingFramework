@@ -58,6 +58,27 @@ git merge upstream/development
 git push origin development
 ```
 
+### Add `upstream` to an existing private copy
+
+If you clone one of your existing private repositories and it does not already
+have an `upstream` remote, add the public framework repository like this:
+
+```bash
+# Clone your private repository
+git clone https://github.com/<your-org>/<your-private-repository>.git
+cd <your-private-repository>
+
+# Link the public framework repository as "upstream"
+git remote add upstream https://github.com/shapediver/GrasshopperTestingFramework.git
+git fetch upstream
+
+# Verify: origin is your private repo; upstream is the public framework repo
+git remote -v
+```
+
+You can then use the syncing steps above. If your project uses `main` rather
+than `development`, merge `upstream/main` instead.
+
 ## Files you will usually edit
 
 - `tests/config/scenarios.json` → which slugs and URL parameters to test
