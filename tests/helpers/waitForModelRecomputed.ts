@@ -1,4 +1,4 @@
-import {Page} from "@playwright/test";
+import { Page } from "@playwright/test";
 
 /**
  * Performs an action and waits until its customized model has completed its
@@ -11,7 +11,7 @@ import {Page} from "@playwright/test";
  * render event is only accepted after customization was observed. Continuous
  * rendering does not emit a beauty-render completion event; in that mode a
  * stable, non-busy viewport is the completion signal instead. iJewel uses
- * WebGi, so it waits for its loading overlay instead.
+ * WebGi, so it waits for its loading overlay and canvas to settle instead.
  */
 export async function waitForModelRecomputed(
   page: Page,
@@ -37,7 +37,9 @@ export async function waitForModelRecomputed(
     (window as any).__sdvModelRecomputed = state;
 
     const isLoadingScreenVisible = () => {
-      const loadingScreen = document.querySelector("#assetManagerLoadingScreen");
+      const loadingScreen = document.querySelector(
+        "#assetManagerLoadingScreen",
+      );
       if (!loadingScreen) return false;
       const style = getComputedStyle(loadingScreen);
       return style.display !== "none" && style.visibility !== "hidden";
@@ -119,7 +121,9 @@ export async function waitForModelRecomputed(
 
         if (state.beautyRenderFinished) return true;
 
-        const viewports = Object.values((window as any).SDV?.viewports ?? {}) as any[];
+        const viewports = Object.values(
+          (window as any).SDV?.viewports ?? {},
+        ) as any[];
         const continuousRendering = viewports.some(
           (viewport) => viewport.continuousRendering === true,
         );
@@ -143,9 +147,9 @@ export async function waitForModelRecomputed(
         // process/busy cycle has completed.
         return now - state.busyFreeSince >= 500;
       },
-      {timeout},
+      undefined,
+      { timeout },
     );
-
   } finally {
     await page.evaluate(() => {
       const SDV = (window as any).SDV;
