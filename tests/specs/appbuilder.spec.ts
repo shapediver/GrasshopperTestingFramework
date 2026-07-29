@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { test } from "@playwright/test";
 import type { ISessionApi, ITreeNode } from "@shapediver/viewer";
 import { scenarioActionById } from "../config/scenarioActions";
 import { assertJsonBaseline } from "../helpers/assertJsonBaseline";
@@ -29,22 +29,11 @@ async function openScenario(
     interstitial: setup,
   });
 
-  const canvas = page.locator("canvas").first();
-  await expect(canvas).toBeVisible({ timeout: defaults?.timeoutMs });
-  const box = await canvas.boundingBox();
-  expect(box, `Canvas has no bounding box for ${scenarioLabel}`).not.toBeNull();
-  expect(box!.width, `Canvas width is 0 for ${scenarioLabel}`).toBeGreaterThan(
-    0,
-  );
-  expect(
-    box!.height,
-    `Canvas height is 0 for ${scenarioLabel}`,
-  ).toBeGreaterThan(0);
-
-  expect(
-    jsErrors,
-    `Unhandled JS errors on ${scenarioLabel}:\n  ${jsErrors.join("\n  ")}`,
-  ).toHaveLength(0);
+  if (jsErrors.length > 0) {
+    throw new Error(
+      `Unhandled JS errors on ${scenarioLabel}:\n  ${jsErrors.join("\n  ")}`,
+    );
+  }
 }
 
 // Read output JSON either from the requested SDV session or, if that session does

@@ -16,9 +16,15 @@ export async function takeSnapshot(
 ) {
   const {maxDiffPixelRatio = 0.02} = options;
   const baselinePath = test.info().snapshotPath(`${name}.png`);
+  // App Builder branding can be an animated GIF. Mask it in both baseline
+  // creation and comparison so animation frames cannot cause visual diffs.
+  const animatedImages = page.locator('img[src*=".gif" i]');
 
   if (!fs.existsSync(baselinePath)) {
-    const screenshot = await page.screenshot({fullPage: true});
+    const screenshot = await page.screenshot({
+      fullPage: true,
+      mask: [animatedImages],
+    });
     fs.mkdirSync(path.dirname(baselinePath), {recursive: true});
     fs.writeFileSync(baselinePath, screenshot);
     console.log(`[takeSnapshot] Created new baseline: ${baselinePath}`);
@@ -27,6 +33,7 @@ export async function takeSnapshot(
 
   await expect(page).toHaveScreenshot(`${name}.png`, {
     fullPage: true,
+    mask: [animatedImages],
     maxDiffPixelRatio,
   });
 }

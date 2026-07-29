@@ -4,8 +4,8 @@ import {Page} from "@playwright/test";
  * Waits until the AppBuilder page is usable.
  *
  * Detection strategy depends on the app variant:
- * - For standard App Builder URLs: waits for Mantine loader, visible canvas, then
- *   checks window.SDV.viewports to settle out of busy mode (standard viewer API).
+ * - For standard App Builder URLs: waits for Mantine loader, then checks
+ *   window.SDV.viewports to settle out of busy mode (standard viewer API).
  * - For ijewel3d URLs (containing "/ijewel3d/"): waits for Mantine loader, visible
  *   canvas, then waits for the webGi LoadingScreenPlugin overlay to disappear.
  */
@@ -27,18 +27,19 @@ export async function waitForAppReady(
 
   if (interstitial) await interstitial(page);
 
-  // Step 2: Canvas element must be visible and have non-zero dimensions
-  await page.waitForFunction(
-    () => {
-      const canvas = document.querySelector("canvas");
-      if (!canvas) return false;
-      const rect = canvas.getBoundingClientRect();
-      return rect.width > 0 && rect.height > 0;
-    },
-    {timeout: 60_000, polling: 2_000},
-  );
-
   if (isIjewel3d) {
+    // Step 2 (ijewel3d): Unlike the standard viewer, webGi does not expose
+    // SDV viewport busy state, so ensure its canvas has been initialized.
+    await page.waitForFunction(
+      () => {
+        const canvas = document.querySelector("canvas");
+        if (!canvas) return false;
+        const rect = canvas.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0;
+      },
+      {timeout, polling: 2_000},
+    );
+
     // Step 3 (ijewel3d): The ijewel3d app uses webGi for rendering instead of
     // the standard ShapeDiver viewport. The webGi LoadingScreenPlugin creates a
     // loading overlay (#assetManagerLoadingScreen) when computing geometry and
@@ -54,19 +55,22 @@ export async function waitForAppReady(
       {timeout, polling: 100},
     );
   } else {
-    // Step 3 (standard): Wait until window.SDV is available, at least one
+    // Step 2 (standard): Wait until window.SDV is available, at least one
     // viewport exists, and all viewports have been continuously not-busy for
     // 500 ms. The debounce catches models that briefly exit busy mode between
-    // render passes (e.g. an initial SESSION_CUSTOMIZED triggers a second
-    // computation immediately after the first finishes).
+    // render passes. This is also valid for models with no geometry, whose
+    // canvas may intentionally remain hidden once computation has finished.
     await page.waitForFunction(
       () => {
         const sdv = (window as any).SDV;
         if (!sdv?.viewports) return false;
-        const viewports = Object.values(sdv.viewports) as Array<{busy?: boolean}>;
+        const viewports = Object.values(sdv.viewports) as Array<{
+          busy?: boolean;
+          isBusy?: boolean;
+        }>;
         if (viewports.length === 0) return false;
 
-        if (!viewports.every((viewport) => !viewport.busy)) {
+        if (!viewports.every((viewport) => !(viewport.busy ?? viewport.isBusy))) {
           (window as any).__sdvBusyFreeStart = undefined;
           return false;
         }
