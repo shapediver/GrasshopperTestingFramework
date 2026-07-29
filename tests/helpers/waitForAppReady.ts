@@ -21,6 +21,61 @@ export async function waitForAppReady(
   const currentUrl = page.url();
   const isIjewel3d = /\/ijewel3d\//.test(currentUrl);
 
+  if (!isIjewel3d) {
+    // Start tracking as soon as SDV is available, before waiting for the React
+    // loader. Parameter-settings URLs and model states can begin a deferred
+    // customization after the loader disappears, so sampling `viewport.busy`
+    // only afterwards can otherwise race that work.
+    await page.waitForFunction(
+      () => {
+        const SDV = (window as any).SDV;
+        if (!SDV?.addListener) return false;
+        if ((window as any).__sdvAppReadyTracker) return true;
+
+        const state = {
+          customizationSeen: false,
+          beautyAfterCustomization: false,
+          busySeen: false,
+          busyFinished: false,
+          tokens: [] as string[],
+        };
+        (window as any).__sdvAppReadyTracker = state;
+
+        state.tokens.push(
+          SDV.addListener(
+            SDV.EVENTTYPE?.SESSION?.SESSION_CUSTOMIZED ?? "session.customized",
+            () => {
+              state.customizationSeen = true;
+            },
+          ),
+          SDV.addListener(
+            SDV.EVENTTYPE?.RENDERING?.BEAUTY_RENDERING_FINISHED ??
+              "rendering.beautyRenderingFinished",
+            () => {
+              if (state.customizationSeen)
+                state.beautyAfterCustomization = true;
+            },
+          ),
+          SDV.addListener(
+            SDV.EVENTTYPE?.VIEWPORT?.BUSY_MODE_ON ?? "viewport.busy.on",
+            () => {
+              state.busySeen = true;
+              state.busyFinished = false;
+            },
+          ),
+          SDV.addListener(
+            SDV.EVENTTYPE?.VIEWPORT?.BUSY_MODE_OFF ?? "viewport.busy.off",
+            () => {
+              if (state.busySeen) state.busyFinished = true;
+            },
+          ),
+        );
+        return true;
+      },
+      {timeout},
+    );
+  }
+
   // Step 1: React-level loader gone — Mantine Loader renders with data-component="Loader"
   await page
     .locator('[data-component="Loader"]')
@@ -60,14 +115,13 @@ export async function waitForAppReady(
     // rendering a heavy scene continuously, so Playwright's element-stability
     // check may never complete even though the app is ready for interaction.
   } else {
-    // Step 2 (standard): Wait until window.SDV is available, at least one
-    // viewport exists, and all viewports have been continuously not-busy for
-    // 500 ms. The debounce catches models that briefly exit busy mode between
-    // render passes. This is also valid for models with no geometry, whose
-    // canvas may intentionally remain hidden once computation has finished.
+    // Step 2 (standard): Wait for all viewports to be idle after the final
+    // observed busy/customization cycle. Deferred model-state and parameter
+    // settings requests must produce such a cycle before this can resolve.
     await page.waitForFunction(
       () => {
         const sdv = (window as any).SDV;
+        const state = (window as any).__sdvAppReadyTracker;
         if (!sdv?.viewports) return false;
         const viewports = Object.values(sdv.viewports) as Array<{
           busy?: boolean;
@@ -86,10 +140,36 @@ export async function waitForAppReady(
           return false;
         }
 
-        return now - (window as any).__sdvBusyFreeStart >= 500;
+        const hasDeferredCustomization =
+          new URLSearchParams(window.location.search).has("modelStateId") ||
+          new URLSearchParams(window.location.search).has(
+            "_parameters_settings_url",
+          );
+        const completedObservedCycle =
+          state?.beautyAfterCustomization ||
+          (state?.busySeen && state?.busyFinished);
+        if (hasDeferredCustomization && !completedObservedCycle) return false;
+
+        // A static app may not emit a customization or busy event at all.
+        // Keep a longer quiet fallback for that case, while event-driven apps
+        // proceed as soon as their final idle debounce has elapsed.
+        const requiredIdleMs = hasDeferredCustomization
+          ? 2_000
+          : completedObservedCycle
+            ? 500
+            : 2_000;
+        return now - (window as any).__sdvBusyFreeStart >= requiredIdleMs;
       },
       {timeout, polling: 100},
     );
+
+    await page.evaluate(() => {
+      const SDV = (window as any).SDV;
+      const state = (window as any).__sdvAppReadyTracker;
+      state?.tokens.forEach((token: string) => SDV.removeListener(token));
+      delete (window as any).__sdvAppReadyTracker;
+      delete (window as any).__sdvBusyFreeStart;
+    });
   }
 }
 
