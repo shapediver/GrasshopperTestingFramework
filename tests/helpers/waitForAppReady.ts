@@ -38,6 +38,7 @@ export async function waitForAppReady(
         const rect = canvas.getBoundingClientRect();
         return rect.width > 0 && rect.height > 0;
       },
+      undefined,
       {timeout, polling: 2_000},
     );
 
@@ -53,6 +54,7 @@ export async function waitForAppReady(
         const style = getComputedStyle(loadingScreen);
         return style.display === "none" || style.visibility === "hidden";
       },
+      undefined,
       {timeout, polling: 100},
     );
 
@@ -92,6 +94,7 @@ export async function waitForAppReady(
 
         return now - (window as any).__sdvBusyFreeStart >= 500;
       },
+      undefined,
       {timeout, polling: 100},
     );
   }

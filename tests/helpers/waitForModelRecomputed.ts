@@ -8,11 +8,11 @@ import { Page } from "@playwright/test";
  * emitted before the AppBuilder instance pipeline finishes updating the scene
  * tree. A beauty-render event that occurred before that customization must
  * also be ignored, so both listeners are installed before the action and the
- * render event is only accepted after customization was observed. Both normal
- * and continuous rendering must then leave every viewport continuously idle:
- * App Builder can receive a beauty-render event before its instance pipeline
- * finishes updating the scene tree. iJewel uses WebGi, so it waits for its
- * loading overlay instead.
+ * render event is only accepted after customization was observed. Any viewport
+ * busy cycle invalidates an already-observed beauty render, so the helper waits
+ * for the next one. When no beauty event follows (for example during
+ * continuous rendering), a longer uninterrupted non-busy period is used.
+ * iJewel uses WebGi, so it waits for its loading overlay instead.
  */
 export async function waitForModelRecomputed(
   page: Page,
@@ -27,12 +27,17 @@ export async function waitForModelRecomputed(
       isIjewel3d,
       customized: false,
       beautyRenderFinished: false,
+      beautyRenderFinishedAt: 0,
       busyFreeSince: 0,
+      lastBusyOnAt: 0,
+      lastBusyOffAt: 0,
       lastCustomizationAt: 0,
       loadingScreenSeen: false,
       loadingScreenIdleSince: 0,
       customizationToken: "",
       beautyRenderToken: "",
+      busyOnToken: "",
+      busyOffToken: "",
       loadingScreenObserver: null as MutationObserver | null,
     };
 
@@ -69,6 +74,7 @@ export async function waitForModelRecomputed(
         // AppBuilder instances can trigger follow-up customizations. A beauty
         // event from an earlier pass must not satisfy the later one.
         state.beautyRenderFinished = false;
+        state.beautyRenderFinishedAt = 0;
         state.busyFreeSince = 0;
         state.lastCustomizationAt = Date.now();
         if (isIjewel3d && isLoadingScreenVisible())
@@ -76,6 +82,15 @@ export async function waitForModelRecomputed(
       },
     );
     if (!isIjewel3d) {
+      const viewports = Object.values(SDV.viewports ?? {}) as any[];
+      if (
+        viewports.some(
+          (viewport) => viewport.busy === true || viewport.isBusy === true,
+        )
+      ) {
+        state.lastBusyOnAt = Date.now();
+      }
+
       state.beautyRenderToken = SDV.addListener(
         SDV.EVENTTYPE?.RENDERING?.BEAUTY_RENDERING_FINISHED ??
           "rendering.beautyRenderingFinished",
@@ -83,12 +98,35 @@ export async function waitForModelRecomputed(
           // Ignore any render that was already in progress before this action's
           // customization. This commonly happens while an AppBuilder instance
           // pipeline is still replacing scene-tree nodes.
-          const viewports = Object.values(SDV.viewports ?? {}) as any[];
-          const continuousRendering = viewports.some(
-            (viewport) => viewport.continuousRendering === true,
+          const currentViewports = Object.values(
+            SDV.viewports ?? {},
+          ) as any[];
+          const allViewportsIdle = currentViewports.every(
+            (viewport) =>
+              viewport.busy !== true && viewport.isBusy !== true,
           );
-          if (state.customized && !continuousRendering)
+          if (state.customized && allViewportsIdle) {
             state.beautyRenderFinished = true;
+            state.beautyRenderFinishedAt = Date.now();
+          }
+        },
+      );
+      state.busyOnToken = SDV.addListener(
+        SDV.EVENTTYPE?.VIEWPORT?.BUSY_MODE_ON ?? "viewport.busy.on",
+        () => {
+          // A subsequent AppBuilder process can begin after a beauty event.
+          // Discard that event and wait for the render of the new final scene.
+          state.beautyRenderFinished = false;
+          state.beautyRenderFinishedAt = 0;
+          state.busyFreeSince = 0;
+          state.lastBusyOnAt = Date.now();
+        },
+      );
+      state.busyOffToken = SDV.addListener(
+        SDV.EVENTTYPE?.VIEWPORT?.BUSY_MODE_OFF ?? "viewport.busy.off",
+        () => {
+          state.busyFreeSince = 0;
+          state.lastBusyOffAt = Date.now();
         },
       );
     }
@@ -131,39 +169,48 @@ export async function waitForModelRecomputed(
         ) as any[];
         if (viewports.length === 0) return false;
         const allViewportsIdle = viewports.every(
-          // `isBusy` is the current Viewer API. Some older app bundles also
-          // expose `busy`; either true value means the viewport is still busy.
           (viewport) => viewport.busy !== true && viewport.isBusy !== true,
         );
         if (!allViewportsIdle) {
+          // Polling is also a fallback for older viewer bundles that do not
+          // emit viewport busy events.
+          state.beautyRenderFinished = false;
+          state.beautyRenderFinishedAt = 0;
           state.busyFreeSince = 0;
+          state.lastBusyOnAt = Date.now();
           return false;
         }
 
         const now = Date.now();
-        if (now - state.lastCustomizationAt < 500) return false;
         if (!state.busyFreeSince) {
           state.busyFreeSince = now;
           return false;
         }
 
-        // A final beauty event must belong to the last observed customization,
-        // and the viewport busy mode must have remained off long enough for the
-        // final scene update to be painted.
+        const lastModelEventAt = Math.max(
+          state.lastCustomizationAt,
+          state.lastBusyOnAt,
+          state.lastBusyOffAt,
+        );
+
         if (
           state.beautyRenderFinished &&
-          now - state.busyFreeSince >= 500
+          state.beautyRenderFinishedAt >= lastModelEventAt &&
+          now -
+            Math.max(
+              state.beautyRenderFinishedAt,
+              state.busyFreeSince,
+            ) >=
+            500
         )
           return true;
 
-        const continuousRendering = viewports.some(
-          (viewport) => viewport.continuousRendering === true,
+        // `continuousRendering` is internal to the rendering engine and is not
+        // exposed by IViewportApi. If no beauty event follows, use a longer
+        // uninterrupted idle window as the completion signal.
+        return (
+          now - Math.max(lastModelEventAt, state.busyFreeSince) >= 2_000
         );
-        if (!continuousRendering) return false;
-
-        // Allow the continuously-rendered scene to paint after its final
-        // process/busy cycle has completed.
-        return now - state.busyFreeSince >= 500;
       },
       undefined,
       { timeout },
@@ -177,6 +224,8 @@ export async function waitForModelRecomputed(
         SDV.removeListener(state.customizationToken);
         if (state.beautyRenderToken)
           SDV.removeListener(state.beautyRenderToken);
+        if (state.busyOnToken) SDV.removeListener(state.busyOnToken);
+        if (state.busyOffToken) SDV.removeListener(state.busyOffToken);
         state.loadingScreenObserver?.disconnect();
       }
       delete (window as any).__sdvModelRecomputed;
