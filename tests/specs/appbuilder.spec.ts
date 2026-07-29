@@ -208,6 +208,94 @@ async function readExportData(
   }, config);
 }
 
+// Read every output exposed by every loaded session. App Builder registers model
+// instances as sessions too (for example `instance_0`), so this covers both the
+// main model and its instances without needing their names in the config.
+async function readAllOutputData(page: import("@playwright/test").Page) {
+  return page.evaluate(() => {
+    const sessions = (window as any).SDV?.sessions as
+      | Record<
+          string,
+          { outputs?: Record<string, { id?: string; name?: string; content?: Array<{ data?: unknown }> }> }
+        >
+      | undefined;
+
+    if (!sessions || Object.keys(sessions).length === 0) {
+      throw new Error("No SDV sessions are available for output baseline testing.");
+    }
+
+    const entries: Array<[string, unknown]> = [];
+    for (const [sessionName, session] of Object.entries(sessions)) {
+      for (const [outputId, output] of Object.entries(session.outputs ?? {})) {
+        const data = output.content?.[0]?.data;
+        if (data === undefined) {
+          throw new Error(
+            `Output "${output.name ?? outputId}" in session "${sessionName}" has no content[0].data.`,
+          );
+        }
+        entries.push([
+          `${sessionName}/${output.name ?? outputId} (${output.id ?? outputId})`,
+          data,
+        ]);
+      }
+    }
+
+    return Object.fromEntries(entries.sort(([left], [right]) => left.localeCompare(right)));
+  });
+}
+
+// Request every export from every loaded session. This uses the same public
+// session export API as the named check, including App Builder instance sessions.
+async function readAllExportData(page: import("@playwright/test").Page) {
+  return page.evaluate(async () => {
+    const stripHref = (value: unknown): unknown => {
+      if (Array.isArray(value)) return value.map(stripHref);
+      if (value && typeof value === "object") {
+        return Object.fromEntries(
+          Object.entries(value as Record<string, unknown>)
+            .filter(([key]) => key !== "href")
+            .map(([key, nestedValue]) => [key, stripHref(nestedValue)]),
+        );
+      }
+      return value;
+    };
+
+    type ExportEntry = {
+      id?: string;
+      name?: string;
+      request?: () => Promise<{ content?: unknown[] }>;
+    };
+    const sessions = (window as any).SDV?.sessions as
+      | Record<string, { exports?: Record<string, ExportEntry> }>
+      | undefined;
+
+    if (!sessions || Object.keys(sessions).length === 0) {
+      throw new Error("No SDV sessions are available for export baseline testing.");
+    }
+
+    const entries: Array<[string, unknown]> = [];
+    for (const [sessionName, session] of Object.entries(sessions)) {
+      for (const [exportId, exportEntry] of Object.entries(session.exports ?? {})) {
+        if (!exportEntry.request) {
+          throw new Error(
+            `Export "${exportEntry.name ?? exportId}" in session "${sessionName}" has no request().`,
+          );
+        }
+        const result = await exportEntry.request();
+        entries.push([
+          `${sessionName}/${exportEntry.name ?? exportId} (${exportEntry.id ?? exportId})`,
+          // Some valid exports (for example email exports) return no download
+          // content. Requesting them is still the behavior under test, and an
+          // empty array gives them a stable baseline value.
+          stripHref(result.content ?? []),
+        ]);
+      }
+    }
+
+    return Object.fromEntries(entries.sort(([left], [right]) => left.localeCompare(right)));
+  });
+}
+
 // Playwright requires unique test titles, even when multiple scenarios intentionally
 // share the same public id. Expanded array-param scenarios get their own baseline ids,
 // while manually duplicated ids can still intentionally share one baseline.
@@ -239,7 +327,17 @@ for (const scenario of scenarios) {
       });
     }
 
-    for (const output of scenario.outputs ?? []) {
+    if (scenario.outputs === "all") {
+      test("@outputs all output baselines", async ({ page }) => {
+        await openScenario(page, url, baselineId, setup);
+        await assertJsonBaseline(
+          `outputs/${baselineId}-all`,
+          await readAllOutputData(page),
+        );
+      });
+    }
+
+    for (const output of scenario.outputs === "all" ? [] : (scenario.outputs ?? [])) {
       test(`@outputs output baseline: ${output.name}`, async ({ page }) => {
         await openScenario(page, url, baselineId, setup);
         const actual = await readOutputData(page, output);
@@ -250,7 +348,17 @@ for (const scenario of scenarios) {
       });
     }
 
-    for (const exportConfig of scenario.exports ?? []) {
+    if (scenario.exports === "all") {
+      test("@exports all export baselines", async ({ page }) => {
+        await openScenario(page, url, baselineId, setup);
+        await assertJsonBaseline(
+          `exports/${baselineId}-all`,
+          await readAllExportData(page),
+        );
+      });
+    }
+
+    for (const exportConfig of scenario.exports === "all" ? [] : (scenario.exports ?? [])) {
       test(`@exports export baseline: ${exportConfig.name}`, async ({
         page,
       }) => {

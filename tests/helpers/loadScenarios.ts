@@ -18,14 +18,17 @@ export interface ExportBaselineConfig {
   name: string;
 }
 
+/** Use `"all"` to baseline every item exposed by every loaded SDV session. */
+export type BaselineSelection<T> = T[] | "all";
+
 export interface ScenarioConfig {
   id: string;
   slug?: string;
   customUrl?: string;
   baseUrl?: string;
   params?: ScenarioUrlParamsInput;
-  outputs?: OutputBaselineConfig[];
-  exports?: ExportBaselineConfig[];
+  outputs?: BaselineSelection<OutputBaselineConfig>;
+  exports?: BaselineSelection<ExportBaselineConfig>;
   baselineId?: string;
 }
 
@@ -35,8 +38,8 @@ export interface ScenarioFile {
     slug?: string;
     baseUrl?: string;
     params?: ScenarioUrlParamsInput;
-    outputs?: OutputBaselineConfig[];
-    exports?: ExportBaselineConfig[];
+    outputs?: BaselineSelection<OutputBaselineConfig>;
+    exports?: BaselineSelection<ExportBaselineConfig>;
   };
   scenarios: ScenarioConfig[];
 }
@@ -61,6 +64,17 @@ function mergeByKey<T>(
   for (const item of defaults ?? []) merged.set(getKey(item), item);
   for (const item of overrides ?? []) merged.set(getKey(item), item);
   return [...merged.values()];
+}
+
+function mergeBaselineSelection<T>(
+  defaults: BaselineSelection<T> | undefined,
+  overrides: BaselineSelection<T> | undefined,
+  getKey: (item: T) => string,
+): BaselineSelection<T> | undefined {
+  // "all" deliberately wins: a project default should not silently stop
+  // checking newly added outputs or exports, and a scenario can opt into it.
+  if (defaults === "all" || overrides === "all") return "all";
+  return mergeByKey(defaults, overrides, getKey);
 }
 
 function createExpandedBaselineId(
@@ -128,8 +142,16 @@ function mergeScenarioDefaults(
       defaults.params || scenario.params
         ? {...(defaults.params ?? {}), ...(scenario.params ?? {})}
         : undefined,
-    outputs: mergeByKey(defaults.outputs, scenario.outputs, (item) => item.name),
-    exports: mergeByKey(defaults.exports, scenario.exports, (item) => item.name),
+    outputs: mergeBaselineSelection(
+      defaults.outputs,
+      scenario.outputs,
+      (item) => `${item.session ?? "default"}/${item.name}`,
+    ),
+    exports: mergeBaselineSelection(
+      defaults.exports,
+      scenario.exports,
+      (item) => `${item.session ?? "default"}/${item.name}`,
+    ),
   };
 }
 

@@ -356,6 +356,24 @@ Exports:
 }
 ```
 
+To baseline every output or export from the main session and all App Builder
+instance sessions, use `"all"`. One JSON baseline is created for each category;
+its keys include the session and item ids, so same-named items remain distinct.
+
+```json
+{
+  "id": "my-complete-model-test",
+  "slug": "my-app-slug",
+  "outputs": "all",
+  "exports": "all"
+}
+```
+
+> Every export is requested during this test and therefore consumes the same
+> ShapeDiver export credits as a user-initiated export.
+> Exports without downloadable content, such as email exports, are recorded as
+> an empty result after their request succeeds.
+
 If omitted, `session` defaults to `"default"`:
 
 ```json

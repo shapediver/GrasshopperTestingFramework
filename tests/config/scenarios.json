@@ -27,6 +27,12 @@
       ]
     },
     {
+      "id": "instance-output-test-all",
+      "slug": "251103-countingcontroller-2",
+      "outputs": "all",
+      "exports": "all"
+    },
+    {
       "id": "barcelona-output-test",
       "slug": "webinar-2410-a-barcelonaneighbourhood",
       "outputs": [

@@ -230,6 +230,23 @@ Set up a listener **before** clicking, then check the filename. No `waitForModel
 - export baselines are stored under `tests/baselines/exports/`
 - export comparisons ignore all `href` properties recursively
 
+To test all outputs or exports from the main session and every App Builder
+instance session, replace either list with `"all"`:
+
+```json
+{
+  "id": "my-complete-model-test",
+  "slug": "my-app-slug",
+  "outputs": "all",
+  "exports": "all"
+}
+```
+
+All items in a category are stored in one baseline. Export-all requests every
+export, so it consumes the corresponding ShapeDiver export credits. Successful
+exports with no downloadable content (such as email exports) are stored as an
+empty result.
+
 ### 7. Shared defaults in `scenarios.json`
 
 ```json

@@ -1,0 +1,273 @@
+{
+  "default/AppBuilder (0bd2b94f9060b8d1b5a4ed970a7023f3)": {
+    "containers": [
+      {
+        "name": "left",
+        "widgets": [
+          {
+            "props": {
+              "exports": [],
+              "parameters": [
+                {
+                  "name": "Number of Instances",
+                  "overrides": {
+                    "order": 1570
+                  }
+                },
+                {
+                  "name": "Instance Spacing",
+                  "overrides": {
+                    "order": 1571
+                  }
+                },
+                {
+                  "name": "Instance 0 - Count",
+                  "overrides": {
+                    "order": 1572
+                  }
+                },
+                {
+                  "name": "Instance 1 - Count",
+                  "overrides": {
+                    "order": 1573
+                  }
+                },
+                {
+                  "name": "Expression Input",
+                  "overrides": {
+                    "order": 1574
+                  }
+                }
+              ]
+            },
+            "type": "accordion"
+          },
+          {
+            "props": {
+              "markdown": "{\"instance_0\":{\"Count Data\":[{\"data\":4,\"format\":\"data\",\"name\":\"Count Data\"}]},\"instance_1\":{\"Count Data\":[{\"data\":9,\"format\":\"data\",\"name\":\"Count Data\"}]}}"
+            },
+            "type": "text"
+          }
+        ]
+      }
+    ],
+    "instances": [
+      {
+        "name": "instance_0",
+        "outputActions": [
+          {
+            "props": {
+              "output": "Count Data",
+              "parameter": "Count Merger"
+            },
+            "type": "setParameterValue"
+          }
+        ],
+        "parameterValues": {
+          "Count": 2,
+          "Expression Input": {
+            "props": {
+              "name": "Expression Output"
+            },
+            "type": "dataOutput"
+          }
+        },
+        "sessionId": "instance_0",
+        "slug": "250930-countinginstance-2",
+        "transformations": [
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            10,
+            0,
+            1
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            10,
+            10,
+            0,
+            1
+          ]
+        ]
+      },
+      {
+        "name": "instance_1",
+        "outputActions": [
+          {
+            "props": {
+              "output": "Count Data",
+              "parameter": "Count Merger"
+            },
+            "type": "setParameterValue"
+          }
+        ],
+        "parameterValues": {
+          "Count": 3,
+          "Expression Input": {
+            "props": {
+              "name": "Expression Output"
+            },
+            "type": "dataOutput"
+          }
+        },
+        "sessionId": "instance_0",
+        "slug": "250930-countinginstance-2",
+        "transformations": [
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            20,
+            0,
+            1
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            10,
+            20,
+            0,
+            1
+          ]
+        ]
+      }
+    ],
+    "version": "1.0"
+  },
+  "default/Expression Output (55f57d6d898ea2c92a8f71fa19f0dc28)": "x*x",
+  "default/Result Display (e88c52bd870b5a17915e297246322422)": [
+    {
+      "color": "default",
+      "justification": "BL",
+      "location": {
+        "normal": {
+          "X": 0,
+          "Y": 0,
+          "Z": 1
+        },
+        "origin": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "xAxis": {
+          "X": 1,
+          "Y": 0,
+          "Z": 0
+        },
+        "yAxis": {
+          "X": 0,
+          "Y": 1,
+          "Z": 0
+        }
+      },
+      "size": "1",
+      "text": "Instance \"instance_0\" returned value:4\r\nInstance \"instance_1\" returned value:9",
+      "version": "1.0"
+    }
+  ],
+  "instance_0/Count Data (668dfd1fb1f4663a8eb4ce2f3c237e06)": 10,
+  "instance_0/Count Display (c0d95e8718c7cb396c8d46c27da20dba)": [
+    {
+      "color": "#29CF8F",
+      "justification": "BL",
+      "location": {
+        "normal": {
+          "X": 0,
+          "Y": 0,
+          "Z": 1
+        },
+        "origin": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "xAxis": {
+          "X": 1,
+          "Y": 0,
+          "Z": 0
+        },
+        "yAxis": {
+          "X": 0,
+          "Y": 1,
+          "Z": 0
+        }
+      },
+      "size": "1",
+      "text": "x=5",
+      "version": "1.0"
+    },
+    {
+      "color": "#29CF8F",
+      "justification": "BL",
+      "location": {
+        "normal": {
+          "X": 0,
+          "Y": 0,
+          "Z": 1
+        },
+        "origin": {
+          "X": 0,
+          "Y": 0,
+          "Z": 0
+        },
+        "xAxis": {
+          "X": 1,
+          "Y": 0,
+          "Z": 0
+        },
+        "yAxis": {
+          "X": 0,
+          "Y": 1,
+          "Z": 0
+        }
+      },
+      "size": "1",
+      "text": "x+x=10",
+      "version": "1.0"
+    }
+  ]
+}
