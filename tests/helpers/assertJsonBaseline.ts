@@ -1,9 +1,13 @@
-import {expect} from "@playwright/test";
+import {expect, test} from "@playwright/test";
 import * as fs from "fs";
 import * as path from "path";
 
 function isUpdateSnapshotsMode(): boolean {
-  return process.argv.includes("--update-snapshots") || process.argv.includes("-u");
+  // Playwright starts workers without the original CLI arguments, so checking
+  // process.argv here misses `--update-snapshots`. The active test config is
+  // propagated to every worker and is also what Playwright uses for snapshots.
+  const updateSnapshots = test.info().config.updateSnapshots;
+  return updateSnapshots === "all" || updateSnapshots === "changed";
 }
 
 function stableNormalize(value: unknown): unknown {
