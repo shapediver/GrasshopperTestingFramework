@@ -82,7 +82,7 @@ async function readOutputData(
       const data = result.content?.[0]?.data;
       if (data === undefined) {
         throw new Error(
-          `Output "${name}" in session "${session}" has no content[0].data.`,
+          `Output "${result.displayname || result.name || name}" in session "${session}" has no content[0].data.`,
         );
       }
       return data;
@@ -176,7 +176,11 @@ async function readExportData(
             {
               getExportByName?: (
                 exportName: string,
-              ) => Array<{ request?: () => Promise<{ content?: unknown[] }> }>;
+              ) => Array<{
+                name?: string;
+                displayname?: string;
+                request?: () => Promise<{ content?: unknown[] }>;
+              }>;
             }
           >;
         };
@@ -200,7 +204,7 @@ async function readExportData(
     const content = result.content?.[0];
     if (content === undefined) {
       throw new Error(
-        `Export "${name}" in session "${session}" has no content[0].`,
+        `Export "${exportEntry.displayname || exportEntry.name || name}" in session "${session}" has no content[0].`,
       );
     }
 
@@ -229,9 +233,10 @@ async function readAllOutputData(page: import("@playwright/test").Page) {
       for (const [outputId, output] of Object.entries(session.outputs ?? {})) {
         const data = output.content?.[0]?.data;
         if (data === undefined) {
-          throw new Error(
-            `Output "${output.name ?? outputId}" in session "${sessionName}" has no content[0].data.`,
-          );
+          // Geometry/display outputs (for example glTF) commonly have no data
+          // payload. They are covered by screenshot testing and are not JSON
+          // baseline candidates, so omit them from the all-output baseline.
+          continue;
         }
         entries.push([
           `${sessionName}/${output.name ?? outputId} (${output.id ?? outputId})`,
@@ -263,6 +268,7 @@ async function readAllExportData(page: import("@playwright/test").Page) {
     type ExportEntry = {
       id?: string;
       name?: string;
+      displayname?: string;
       request?: () => Promise<{ content?: unknown[] }>;
     };
     const sessions = (window as any).SDV?.sessions as
@@ -278,7 +284,7 @@ async function readAllExportData(page: import("@playwright/test").Page) {
       for (const [exportId, exportEntry] of Object.entries(session.exports ?? {})) {
         if (!exportEntry.request) {
           throw new Error(
-            `Export "${exportEntry.name ?? exportId}" in session "${sessionName}" has no request().`,
+            `Export "${exportEntry.displayname || exportEntry.name || exportId}" in session "${sessionName}" has no request().`,
           );
         }
         const result = await exportEntry.request();

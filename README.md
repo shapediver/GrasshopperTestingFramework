@@ -373,6 +373,8 @@ its keys include the session and item ids, so same-named items remain distinct.
 > ShapeDiver export credits as a user-initiated export.
 > Exports without downloadable content, such as email exports, are recorded as
 > an empty result after their request succeeds.
+> Output-all skips display outputs without `content[0].data` (for example glTF
+> geometry); screenshot tests cover those outputs instead.
 
 If omitted, `session` defaults to `"default"`:
 
