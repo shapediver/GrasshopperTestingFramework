@@ -1,57 +1,37 @@
 {
   "defaults": {
-    "timeoutMs": 90000
+    "timeoutMs": 90000,
+    "params": {
+      "g": "https://project-textures.s3.us-east-1.amazonaws.com/Samuel/SamuelTheme.json"
+    },
+    "baseUrl": "https://www.shapediver.com/app/builder/v1/main/latest/"
   },
-  "scenarios": [
-    {
-      "id": "barcelona",
-      "slug": "webinar-2410-a-barcelonaneighbourhood"
-    },
-    {
-      "id": "shelf-export-test",
-      "slug": "shelf-youtube-exports",
-      "exports": [
-        {
-          "name": "Image Export"
-        }
-      ]
-    },
-    {
-      "id": "instance-output-test",
-      "slug": "251103-countingcontroller-2",
-      "outputs": [
-        {
-          "session": "instance_0",
-          "name": "Count Data"
-        }
-      ]
-    },
-    {
-      "id": "barcelona-output-test",
-      "slug": "webinar-2410-a-barcelonaneighbourhood",
-      "outputs": [
-        {
-          "name": "AppBuilder"
-        }
-      ]
-    },
-    {
-      "id": "barcelona-modelStateId",
-      "slug": "webinar-2410-a-barcelonaneighbourhood",
-      "params": {
-        "modelStateId": "LnRErLoH8KYGUnjP"
-      }
-    },
-    {
-      "id": "barcelona-modelStateId-multiple",
-      "slug": "webinar-2410-a-barcelonaneighbourhood",
-      "params": {
-        "modelStateId": [
-          "f6AP8LgDRMbZHlob",
-          "hXGy28kV6Ds5O4LW",
-          "Dy9iwGmrieGTMLi0"
+    "scenarios": [
+      {
+        "id": "export-pdf",
+        "slug": "samuelcontroller",
+        "exports": [
+          {
+            "name": "pdf_export"
+          }
         ]
+      },
+      {
+        "id": "instance-pricing",
+        "slug": "samuelpricing",
+        "outputs": [
+          {
+            "session": "samuelpricing",
+            "name": "samuelpricing"
+          }
+        ]
+      },
+      {
+        "id": "modelStateId",
+        "slug": "samuelcontroller",
+        "params": {
+          "modelStateId": "K3lGL32nlEzjmTl2"
+        }
       }
-    }
-  ]
-}
+    ]
+  }
