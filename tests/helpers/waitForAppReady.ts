@@ -62,41 +62,137 @@ export async function waitForAppReady(
     // rendering a heavy scene continuously, so Playwright's element-stability
     // check may never complete even though the app is ready for interaction.
   } else {
-    // Step 2 (standard): Wait until window.SDV is available, at least one
-    // viewport exists, and all viewports have been continuously not-busy for
-    // 500 ms. The debounce catches models that briefly exit busy mode between
-    // render passes. This is also valid for models with no geometry, whose
-    // canvas may intentionally remain hidden once computation has finished.
+    // Step 2 (standard): AppBuilder instance processes may start after the
+    // React loader disappears. Track busy and beauty events so a later busy
+    // cycle invalidates an earlier apparent ready state.
     await page.waitForFunction(
-      () => {
-        const sdv = (window as any).SDV;
-        if (!sdv?.viewports) return false;
-        const viewports = Object.values(sdv.viewports) as Array<{
-          busy?: boolean;
-          isBusy?: boolean;
-        }>;
-        if (viewports.length === 0) return false;
-
-        if (
-          !viewports.every(
-            (viewport) => viewport.busy !== true && viewport.isBusy !== true,
-          )
-        ) {
-          (window as any).__sdvBusyFreeStart = undefined;
-          return false;
-        }
-
-        const now = Date.now();
-        if (!(window as any).__sdvBusyFreeStart) {
-          (window as any).__sdvBusyFreeStart = now;
-          return false;
-        }
-
-        return now - (window as any).__sdvBusyFreeStart >= 500;
-      },
+      () => !!(window as any).SDV?.viewports,
       undefined,
       {timeout, polling: 100},
     );
+    await page.evaluate(() => {
+      const SDV = (window as any).SDV;
+      const viewports = Object.values(SDV.viewports ?? {}) as any[];
+      const state = {
+        startedAt: Date.now(),
+        beautyRenderFinishedAt: 0,
+        busyFreeSince: 0,
+        lastBusyOnAt: 0,
+        lastBusyOffAt: 0,
+        beautyRenderToken: "",
+        busyOnToken: "",
+        busyOffToken: "",
+      };
+
+      if (
+        viewports.some(
+          (viewport) => viewport.busy === true || viewport.isBusy === true,
+        )
+      ) {
+        state.lastBusyOnAt = Date.now();
+      }
+
+      state.beautyRenderToken = SDV.addListener(
+        SDV.EVENTTYPE?.RENDERING?.BEAUTY_RENDERING_FINISHED ??
+          "rendering.beautyRenderingFinished",
+        () => {
+          const currentViewports = Object.values(
+            SDV.viewports ?? {},
+          ) as any[];
+          if (
+            currentViewports.every(
+              (viewport) =>
+                viewport.busy !== true && viewport.isBusy !== true,
+            )
+          ) {
+            state.beautyRenderFinishedAt = Date.now();
+          }
+        },
+      );
+      state.busyOnToken = SDV.addListener(
+        SDV.EVENTTYPE?.VIEWPORT?.BUSY_MODE_ON ?? "viewport.busy.on",
+        () => {
+          state.beautyRenderFinishedAt = 0;
+          state.busyFreeSince = 0;
+          state.lastBusyOnAt = Date.now();
+        },
+      );
+      state.busyOffToken = SDV.addListener(
+        SDV.EVENTTYPE?.VIEWPORT?.BUSY_MODE_OFF ?? "viewport.busy.off",
+        () => {
+          state.busyFreeSince = 0;
+          state.lastBusyOffAt = Date.now();
+        },
+      );
+
+      (window as any).__sdvAppReady = state;
+    });
+
+    try {
+      await page.waitForFunction(
+        () => {
+          const SDV = (window as any).SDV;
+          const state = (window as any).__sdvAppReady;
+          const viewports = Object.values(SDV?.viewports ?? {}) as any[];
+          if (!state || viewports.length === 0) return false;
+
+          const allViewportsIdle = viewports.every(
+            (viewport) =>
+              viewport.busy !== true && viewport.isBusy !== true,
+          );
+          if (!allViewportsIdle) {
+            state.beautyRenderFinishedAt = 0;
+            state.busyFreeSince = 0;
+            state.lastBusyOnAt = Date.now();
+            return false;
+          }
+
+          const now = Date.now();
+          if (!state.busyFreeSince) {
+            state.busyFreeSince = now;
+            return false;
+          }
+
+          const lastModelEventAt = Math.max(
+            state.startedAt,
+            state.lastBusyOnAt,
+            state.lastBusyOffAt,
+          );
+          if (
+            state.beautyRenderFinishedAt >= lastModelEventAt &&
+            now -
+              Math.max(
+                state.beautyRenderFinishedAt,
+                state.busyFreeSince,
+              ) >=
+              500
+          )
+            return true;
+
+          // Some viewports render continuously and never emit beauty-finished.
+          return (
+            now -
+              Math.max(lastModelEventAt, state.busyFreeSince) >=
+            2_000
+          );
+        },
+        undefined,
+        {timeout, polling: 100},
+      );
+    } finally {
+      await page.evaluate(() => {
+        const SDV = (window as any).SDV;
+        const state = (window as any).__sdvAppReady;
+        if (state) {
+          if (state.beautyRenderToken)
+            SDV.removeListener(state.beautyRenderToken);
+          if (state.busyOnToken) SDV.removeListener(state.busyOnToken);
+          if (state.busyOffToken)
+            SDV.removeListener(state.busyOffToken);
+        }
+        delete (window as any).__sdvAppReady;
+      });
+    }
   }
 }
 
