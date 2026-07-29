@@ -75,7 +75,11 @@ export async function waitForAppReady(
         }>;
         if (viewports.length === 0) return false;
 
-        if (!viewports.every((viewport) => !(viewport.busy ?? viewport.isBusy))) {
+        if (
+          !viewports.every(
+            (viewport) => viewport.busy !== true && viewport.isBusy !== true,
+          )
+        ) {
           (window as any).__sdvBusyFreeStart = undefined;
           return false;
         }

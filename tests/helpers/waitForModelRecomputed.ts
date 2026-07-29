@@ -131,7 +131,9 @@ export async function waitForModelRecomputed(
         ) as any[];
         if (viewports.length === 0) return false;
         const allViewportsIdle = viewports.every(
-          (viewport) => !(viewport.busy ?? viewport.isBusy),
+          // `isBusy` is the current Viewer API. Some older app bundles also
+          // expose `busy`; either true value means the viewport is still busy.
+          (viewport) => viewport.busy !== true && viewport.isBusy !== true,
         );
         if (!allViewportsIdle) {
           state.busyFreeSince = 0;
