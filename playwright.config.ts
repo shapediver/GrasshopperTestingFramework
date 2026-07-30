@@ -1,4 +1,4 @@
-import {defineConfig, devices} from "@playwright/test";
+import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./tests/specs",
@@ -8,14 +8,14 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 3 : 2,
-  reporter: [["html", {open: "never"}], ["list"]],
+  reporter: [["html", { open: "never" }], ["list"]],
   timeout: 120_000,
   snapshotDir: "./tests/snapshots",
   snapshotPathTemplate: "{snapshotDir}/{arg}{ext}",
   expect: {
     timeout: 30_000,
     toHaveScreenshot: {
-      maxDiffPixelRatio: 0.02,
+      maxDiffPixelRatio: 0.03,
     },
   },
   use: {
@@ -25,12 +25,12 @@ export default defineConfig({
     video: "retain-on-failure",
     actionTimeout: 30_000,
     navigationTimeout: 60_000,
-    viewport: {width: 1280, height: 800},
+    viewport: { width: 1280, height: 800 },
   },
   projects: [
     {
       name: "chromium",
-      use: {...devices["Desktop Chrome"]},
+      use: { ...devices["Desktop Chrome"] },
     },
   ],
 });

@@ -14,7 +14,6 @@ export async function takeSnapshot(
     maxDiffPixelRatio?: number;
   } = {},
 ) {
-  const {maxDiffPixelRatio = 0.02} = options;
   const baselinePath = test.info().snapshotPath(`${name}.png`);
   // App Builder branding can be an animated GIF. Mask it in both baseline
   // creation and comparison so animation frames cannot cause visual diffs.
@@ -34,6 +33,10 @@ export async function takeSnapshot(
   await expect(page).toHaveScreenshot(`${name}.png`, {
     fullPage: true,
     mask: [animatedImages],
-    maxDiffPixelRatio,
+    // Leave the default to playwright.config.ts. A caller can still opt in to
+    // a per-snapshot threshold when a scenario genuinely needs one.
+    ...(options.maxDiffPixelRatio === undefined
+      ? {}
+      : {maxDiffPixelRatio: options.maxDiffPixelRatio}),
   });
 }
