@@ -1,5 +1,5 @@
 {
-  "default/AppBuilder (0bd2b94f9060b8d1b5a4ed970a7023f3)": [
+  "default/AppBuilder": [
     {
       "data": {
         "containers": [
@@ -183,14 +183,14 @@
       "name": "AppBuilder"
     }
   ],
-  "default/Expression Output (55f57d6d898ea2c92a8f71fa19f0dc28)": [
+  "default/Expression Output": [
     {
       "data": "x*x",
       "format": "data",
       "name": "Expression Output"
     }
   ],
-  "default/Result Display (e88c52bd870b5a17915e297246322422)": [
+  "default/Result Display": [
     {
       "data": [
         {
@@ -226,14 +226,14 @@
       "format": "tag3d"
     }
   ],
-  "instance_0/Count Data (668dfd1fb1f4663a8eb4ce2f3c237e06)": [
+  "instance_0/Count Data": [
     {
       "data": 10,
       "format": "data",
       "name": "Count Data"
     }
   ],
-  "instance_0/Count Display (c0d95e8718c7cb396c8d46c27da20dba)": [
+  "instance_0/Count Display": [
     {
       "data": [
         {

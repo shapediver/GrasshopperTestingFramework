@@ -278,7 +278,7 @@ async function readAllOutputData(page: import("@playwright/test").Page) {
         const content = output.content ?? [];
         const hasDataItem = content.some((item) => item.data !== undefined);
         entries.push([
-          `${sessionName}/${output.name ?? outputId} (${output.id ?? outputId})`,
+          `${sessionName}/${output.name ?? outputId}`,
           // Keep the complete content array so multi-item data outputs are
           // fully tested. Asset/display-only outputs have temporary download
           // URLs removed before comparison.
@@ -371,7 +371,7 @@ async function readAllExportData(page: import("@playwright/test").Page) {
         }
         const result = await exportEntry.request();
         entries.push([
-          `${sessionName}/${exportEntry.name ?? exportId} (${exportEntry.id ?? exportId})`,
+          `${sessionName}/${exportEntry.name ?? exportId}`,
           // Some valid exports (for example email exports) return no download
           // content. Requesting them is still the behavior under test, and an
           // empty array gives them a stable baseline value.
@@ -390,7 +390,7 @@ async function readAllExportData(page: import("@playwright/test").Page) {
         }
         const result = await exportEntry.request(instance.parameterValues);
         entries.push([
-          `${instance.name}/${exportEntry.name ?? exportId} (${exportEntry.id ?? exportId})`,
+          `${instance.name}/${exportEntry.name ?? exportId}`,
           stripHref(result.content ?? []),
         ]);
       }
