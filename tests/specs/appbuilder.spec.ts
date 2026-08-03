@@ -159,25 +159,61 @@ async function readExportData(
       return value;
     };
 
+    type ExportEntry = {
+      name?: string;
+      displayname?: string;
+      request?: (parameterValues?: Record<string, string>) => Promise<{ content?: unknown[] }>;
+    };
+    type Session = {
+      parameters?: Record<string, { id?: string; name?: string; displayname?: string }>;
+      outputs?: Record<string, { name?: string; displayname?: string; content?: Array<{ data?: unknown }> }>;
+      getExportByName?: (exportName: string) => ExportEntry[];
+    };
+    type Instance = { name: string; sessionId: string; parameterValues: Record<string, string> };
+
     const sessions = (
       window as Window & {
         SDV?: {
-          sessions?: Record<
-            string,
-            {
-              getExportByName?: (
-                exportName: string,
-              ) => Array<{
-                name?: string;
-                displayname?: string;
-                request?: () => Promise<{ content?: unknown[] }>;
-              }>;
-            }
-          >;
+          sessions?: Record<string, Session>;
         };
       }
     ).SDV?.sessions;
-    const sdSession = sessions?.[session];
+
+    // Instances share their backing session and are rendered with
+    // customizeParallel(parameterValues). Exporting the backing session without
+    // those values would export its current/default state instead.
+    const instances: Instance[] = [];
+    for (const controller of Object.values(sessions ?? {})) {
+      for (const output of Object.values(controller.outputs ?? {})) {
+        if (output.name !== "AppBuilder" && output.displayname !== "AppBuilder") continue;
+        const appBuilder = output.content?.find((item) => item.data !== undefined)?.data as
+          | { instances?: Array<{ name?: string; sessionId?: string; parameterValues?: Record<string, unknown> }> }
+          | undefined;
+        appBuilder?.instances?.forEach((instance, index) => {
+          if (!instance.sessionId) return;
+          const instanceSession = sessions?.[instance.sessionId];
+          if (!instanceSession) return;
+          const parameterValues: Record<string, string> = {};
+          for (const [identifier, value] of Object.entries(instance.parameterValues ?? {})) {
+            const parameter = Object.values(instanceSession.parameters ?? {}).find(
+              (candidate) =>
+                candidate.id === identifier ||
+                candidate.name === identifier ||
+                candidate.displayname === identifier,
+            );
+            if (parameter?.id) parameterValues[parameter.id] = String(value);
+          }
+          instances.push({
+            name: instance.name ?? `instances[${index}]`,
+            sessionId: instance.sessionId,
+            parameterValues,
+          });
+        });
+      }
+    }
+
+    const instance = instances.find((candidate) => candidate.name === session);
+    const sdSession = sessions?.[instance?.sessionId ?? session];
     if (!sdSession?.getExportByName) {
       throw new Error(
         `SDV.sessions[${session}] is not available or has no getExportByName().`,
@@ -191,7 +227,7 @@ async function readExportData(
       );
     }
 
-    const result = await exportEntry.request();
+    const result = await exportEntry.request(instance?.parameterValues);
     const content = result.content?.[0];
     if (content === undefined) {
       throw new Error(
@@ -255,8 +291,9 @@ async function readAllOutputData(page: import("@playwright/test").Page) {
   });
 }
 
-// Request every export from every loaded session. This uses the same public
-// session export API as the named check, including App Builder instance sessions.
+// Request every export from the main session and each App Builder instance.
+// Instances sharing a backing session are exported independently with their
+// configured parameter values.
 async function readAllExportData(page: import("@playwright/test").Page) {
   return page.evaluate(async () => {
     const stripHref = (value: unknown): unknown => {
@@ -275,18 +312,57 @@ async function readAllExportData(page: import("@playwright/test").Page) {
       id?: string;
       name?: string;
       displayname?: string;
-      request?: () => Promise<{ content?: unknown[] }>;
+      request?: (parameterValues?: Record<string, string>) => Promise<{ content?: unknown[] }>;
     };
+    type Session = {
+      parameters?: Record<string, { id?: string; name?: string; displayname?: string }>;
+      outputs?: Record<string, { name?: string; displayname?: string; content?: Array<{ data?: unknown }> }>;
+      exports?: Record<string, ExportEntry>;
+    };
+    type Instance = { name: string; sessionId: string; parameterValues: Record<string, string> };
     const sessions = (window as any).SDV?.sessions as
-      | Record<string, { exports?: Record<string, ExportEntry> }>
+      | Record<string, Session>
       | undefined;
 
     if (!sessions || Object.keys(sessions).length === 0) {
       throw new Error("No SDV sessions are available for export baseline testing.");
     }
 
+    const instances: Instance[] = [];
+    for (const controller of Object.values(sessions)) {
+      for (const output of Object.values(controller.outputs ?? {})) {
+        if (output.name !== "AppBuilder" && output.displayname !== "AppBuilder") continue;
+        const appBuilder = output.content?.find((item) => item.data !== undefined)?.data as
+          | { instances?: Array<{ name?: string; sessionId?: string; parameterValues?: Record<string, unknown> }> }
+          | undefined;
+        appBuilder?.instances?.forEach((instance, index) => {
+          if (!instance.sessionId) return;
+          const instanceSession = sessions[instance.sessionId];
+          if (!instanceSession) return;
+          const parameterValues: Record<string, string> = {};
+          for (const [identifier, value] of Object.entries(instance.parameterValues ?? {})) {
+            const parameter = Object.values(instanceSession.parameters ?? {}).find(
+              (candidate) =>
+                candidate.id === identifier ||
+                candidate.name === identifier ||
+                candidate.displayname === identifier,
+            );
+            if (parameter?.id) parameterValues[parameter.id] = String(value);
+          }
+          instances.push({
+            name: instance.name ?? `instances[${index}]`,
+            sessionId: instance.sessionId,
+            parameterValues,
+          });
+        });
+      }
+    }
+
     const entries: Array<[string, unknown]> = [];
+    const instanceSessionIds = new Set(instances.map((instance) => instance.sessionId));
     for (const [sessionName, session] of Object.entries(sessions)) {
+      // These sessions are implementation details for the instances below.
+      if (instanceSessionIds.has(sessionName)) continue;
       for (const [exportId, exportEntry] of Object.entries(session.exports ?? {})) {
         if (!exportEntry.request) {
           throw new Error(
@@ -299,6 +375,22 @@ async function readAllExportData(page: import("@playwright/test").Page) {
           // Some valid exports (for example email exports) return no download
           // content. Requesting them is still the behavior under test, and an
           // empty array gives them a stable baseline value.
+          stripHref(result.content ?? []),
+        ]);
+      }
+    }
+
+    for (const instance of instances) {
+      const instanceSession = sessions[instance.sessionId];
+      for (const [exportId, exportEntry] of Object.entries(instanceSession.exports ?? {})) {
+        if (!exportEntry.request) {
+          throw new Error(
+            `Export "${exportEntry.displayname || exportEntry.name || exportId}" in instance "${instance.name}" has no request().`,
+          );
+        }
+        const result = await exportEntry.request(instance.parameterValues);
+        entries.push([
+          `${instance.name}/${exportEntry.name ?? exportId} (${exportEntry.id ?? exportId})`,
           stripHref(result.content ?? []),
         ]);
       }
