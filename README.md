@@ -129,7 +129,9 @@ Local setup:
 
 To get this information, go on the ShapeDiver platform, Settings -> Developers -> PLATFORM BACKEND API ACCESS KEYS -> Create new. The access token needs **Models → Read** permission. For local convenience, the test setup first checks this repository's `.env.platform-access`, then falls back to `.env.platform-access` in your user home folder. CI can provide the same variables directly as environment variables.
 
-When production credentials are present, Playwright global setup fetches `ticket`, `modelViewUrl`, and `accessToken` for every configured scenario slug. The generated cache is written to `tests/config/.private-model-access.json` and is gitignored. Test URLs use the fetched values as query parameters (`ticket`, `modelViewUrl`, `accessToken`) plus `redirect=0`. If any configured slug cannot be resolved with the provided credentials, setup fails fast.
+When production credentials are present, Playwright global setup fetches `ticket`, `modelViewUrl`, and the model access token for every configured scenario slug. The generated cache is written to `tests/config/.private-model-access.json` and is gitignored. Test URLs use the fetched values as query parameters (`ticket`, `modelViewUrl`, `jwtToken`) plus `redirect=0`. If any configured slug cannot be resolved with the provided credentials, setup fails fast.
+
+Scenarios that already provide a direct session using `ticket` and `modelViewUrl` (whether in their URL or `params`) keep that session source. Supply its backend token as `jwtToken`; the framework does not add a competing `slug` parameter.
 
 If credentials are absent, the generated cache is removed and tests run through the normal public `?slug=` flow.
 

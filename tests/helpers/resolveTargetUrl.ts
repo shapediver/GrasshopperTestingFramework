@@ -87,6 +87,9 @@ export function resolveTargetUrl(scenario: ScenarioConfig): string {
   const url = new URL(baseUrl);
   const privateModelAccessCache = loadPrivateModelAccessCache();
   const params = {...(scenario.params as ScenarioUrlParams | undefined)};
+  const hasDirectSessionSource =
+    (url.searchParams.has("ticket") || params.ticket !== undefined) &&
+    (url.searchParams.has("modelViewUrl") || params.modelViewUrl !== undefined);
 
   if (privateModelAccessCache) {
     const slug = getScenarioSlug(scenario, envBaseUrl);
@@ -107,11 +110,12 @@ export function resolveTargetUrl(scenario: ScenarioConfig): string {
     // scenario params (including g) untouched; only replace the slug-based
     // session source with credentialed private model access data.
     url.searchParams.delete("slug");
+    delete params.slug;
     params.ticket = privateModelAccess.ticket;
     params.modelViewUrl = privateModelAccess.modelViewUrl;
-    params.accessToken = privateModelAccess.accessToken;
+    params.jwtToken = privateModelAccess.accessToken;
     params.redirect = "0";
-  } else if (!url.searchParams.has("slug")) {
+  } else if (!url.searchParams.has("slug") && !hasDirectSessionSource) {
     if (!scenario.slug) {
       throw new Error(
         `Scenario "${scenario.id}" could not resolve a slug. Provide scenario.slug, defaults.slug, or a URL that already contains ?slug=.`,
